@@ -5,7 +5,7 @@
 void Canvas::resize(int newW, int newH) {
     std::vector<Color> newCells(
         newW * newH,
-        Color{ 0.0f, 0.0f, 0.0f, 1.0f }
+        Color{ 0, 0, 0, 255 }
     );
 
     int copyW = std::min(w, newW);
@@ -48,4 +48,16 @@ void View::zoomAt(float mx, float my, float factor) {
     originX = mx - (mx - originX) * real;
     originY = my - (my - originY) * real;
     cellSize = newSize;
+}
+
+void Canvas::flipHorizontal() {
+    for (int y = 0; y < h; y++)
+        for (int x = 0; x < w / 2; x++)
+            std::swap(cells[y * w + x], cells[y * w + (w - 1 - x)]);
+}
+
+void Canvas::flipVertical() {
+    for (int y = 0; y < h / 2; y++)
+        for (int x = 0; x < w; x++)
+            std::swap(cells[y * w + x], cells[(h - 1 - y) * w + x]);
 }

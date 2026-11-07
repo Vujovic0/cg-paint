@@ -12,7 +12,12 @@ float uAspectRatio = 1.0f;
 float windowWidth;
 float windowHeight;
 
-View* gView = nullptr;
+unsigned int VAO;
+unsigned int quadVBO;
+unsigned int colorVBO;
+
+View* ViewPtr = nullptr;
+Canvas* canvasPtr = nullptr;
 bool panning = false;
 double lastMouseX = 0, lastMouseY = 0;
 
@@ -24,10 +29,22 @@ int endProgram(std::string message) {
     return -1;
 }
 
+
+void uploadColors(unsigned int colorVBO, const Canvas& canvas) {
+    glBindBuffer(GL_ARRAY_BUFFER, colorVBO);
+    glBufferSubData(GL_ARRAY_BUFFER, 0,
+        canvas.cells.size() * sizeof(Color),
+        canvas.cells.data());
+}
+
 void keyboardCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
         std::cout << "User pressed escape" << std::endl;
         glfwSetWindowShouldClose(window, GLFW_TRUE);
+    }
+    if (action == GLFW_PRESS) {
+        if (key == GLFW_KEY_H) { canvasPtr->flipHorizontal(); uploadColors(colorVBO, *canvasPtr); }
+        if (key == GLFW_KEY_V) { canvasPtr->flipVertical();   uploadColors(colorVBO, *canvasPtr); }
     }
 }
 
@@ -44,15 +61,15 @@ void mouseCallback(GLFWwindow* window, int button, int action, int mods) {
 }
 
 void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
-    if (!gView) return;
+    if (!ViewPtr) return;
     double mx, my;
     glfwGetCursorPos(window, &mx, &my);
-    gView->zoomAt((float)mx, (float)my, powf(1.2f, (float)yoffset));
+    ViewPtr->zoomAt((float)mx, (float)my, powf(1.2f, (float)yoffset));
 }
 
 void cursorPosCallback(GLFWwindow* window, double x, double y) {
-    if (panning && gView) {
-        gView->pan((float)(x - lastMouseX), (float)(y - lastMouseY));
+    if (panning && ViewPtr) {
+        ViewPtr->pan((float)(x - lastMouseX), (float)(y - lastMouseY));
         lastMouseX = x;
         lastMouseY = y;
     }
@@ -84,10 +101,11 @@ void populateVBO(unsigned int &VAO, unsigned int &quadVBO, unsigned int &colorVB
     glBindBuffer(GL_ARRAY_BUFFER, colorVBO);
     glBufferData(GL_ARRAY_BUFFER, canvas.cells.size() * sizeof(Color),
         canvas.cells.data(), GL_DYNAMIC_DRAW);
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_TRUE, sizeof(Color), (void*)0);
+    glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Color), (void*)0);
     glEnableVertexAttribArray(1);
     glVertexAttribDivisor(1, 1);  
 }
+
 
 int main()
 {
@@ -103,6 +121,8 @@ int main()
     glfwMakeContextCurrent(window);
     glfwFocusWindow(window);
 
+    glfwSetScrollCallback(window, scrollCallback);
+    glfwSetCursorPosCallback(window, cursorPosCallback);
     glfwSetKeyCallback(window, keyboardCallback);
     glfwSetMouseButtonCallback(window, mouseCallback);
 
@@ -110,15 +130,15 @@ int main()
 
     unsigned int canvasShader = createShader("canvas.vert", "canvas.frag");
    
-    Canvas canvas = Canvas(10000, 1000);
+    Canvas canvas = Canvas(320, 180);
+    canvas.at(0, 0) = Color{ 255, 0, 0, 1 };                    // crveno, gore levo
+    canvas.at(canvas.w - 1, 0) = Color{ 0, 255, 0, 1 };         // zeleno, gore desno
+    canvas.at(0, canvas.h - 1) = Color{ 0, 0, 255, 1 };         // plavo, dole levo
     Workspace workspace = Workspace{ 0.0f, 0.0f, windowWidth, windowHeight };
 
     View view(canvas, workspace, 15);
-    gView = &view;
-
-    unsigned int VAO;
-    unsigned int quadVBO;
-    unsigned int colorVBO;
+    ViewPtr = &view;
+    canvasPtr = &canvas;
 
     populateVBO(VAO, quadVBO, colorVBO, canvas);
 
@@ -129,16 +149,15 @@ int main()
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+
+
     while (!glfwWindowShouldClose(window))
     {
         auto frameStart = std::chrono::steady_clock::now();
 
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glfwSetScrollCallback(window, scrollCallback);
-        glfwSetCursorPosCallback(window, cursorPosCallback);
-        glfwSetKeyCallback(window, keyboardCallback);
-        glfwSetMouseButtonCallback(window, mouseCallback);
+
 
         glUseProgram(canvasShader);
         glUniform1f(glGetUniformLocation(canvasShader, "uCellSize"), (float)view.cellSize);
