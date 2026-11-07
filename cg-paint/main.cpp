@@ -54,7 +54,7 @@ int main()
 
     if (glewInit() != GLEW_OK) return endProgram("GLEW failed to initialize");
 
-    unsigned int basicShader = createShader("basic.vert", "basic.frag");
+    unsigned int canvasShader = createShader("canvas.vert", "canvas.frag");
 
     float vertices[] = {
         //   x      y       r     g     b        s     t
@@ -96,9 +96,9 @@ int main()
 
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glUseProgram(basicShader);
+        glUseProgram(canvasShader);
 
-        glUniform1f(glGetUniformLocation(basicShader, "uAspectRatio"), uAspectRatio);
+        glUniform1f(glGetUniformLocation(canvasShader, "uAspectRatio"), uAspectRatio);
 
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
