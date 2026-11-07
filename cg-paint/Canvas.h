@@ -20,6 +20,8 @@ public:
     void resize(int newW, int newH);
     void flipVertical();
     void flipHorizontal();
+    void rotateCounterClockwise();
+    void rotateClockwise();
 };
 
 class View {
@@ -27,7 +29,10 @@ public:
     float cellSize;
     float originX;
     float originY;
-    View(const Canvas& canvas, Workspace ws, float marginPercent);
+    float marginPercent;
+    Workspace workspace;
+    void fit(const Canvas& canvas);
+    View(const Canvas& canvas, Workspace ws, float marginPercent) : workspace(ws), marginPercent(marginPercent) { fit(canvas); };
     Cell screenToCell(float sx, float sy) const { return Cell{ (int)floor((sx - originX) / cellSize), (int)floor((sy - originY) / cellSize) }; };
     Vec2 cellToScreen(int cx, int cy) const { return Vec2{ cx * cellSize + originX, cy * cellSize + originY }; };
     void zoomAt(float mx, float my, float factor);

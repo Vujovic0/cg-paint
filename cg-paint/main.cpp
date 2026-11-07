@@ -16,7 +16,7 @@ unsigned int VAO;
 unsigned int quadVBO;
 unsigned int colorVBO;
 
-View* ViewPtr = nullptr;
+View* viewPtr = nullptr;
 Canvas* canvasPtr = nullptr;
 bool panning = false;
 double lastMouseX = 0, lastMouseY = 0;
@@ -46,6 +46,12 @@ void keyboardCallback(GLFWwindow* window, int key, int scancode, int action, int
         if (key == GLFW_KEY_H) { canvasPtr->flipHorizontal(); uploadColors(colorVBO, *canvasPtr); }
         if (key == GLFW_KEY_V) { canvasPtr->flipVertical();   uploadColors(colorVBO, *canvasPtr); }
     }
+    if (key == GLFW_KEY_R && action == GLFW_PRESS) {
+        if (mods & GLFW_MOD_SHIFT) canvasPtr->rotateCounterClockwise();
+        else                       canvasPtr->rotateClockwise();
+        uploadColors(colorVBO, *canvasPtr);
+        viewPtr->fit(*canvasPtr);
+    }
 }
 
 void mouseCallback(GLFWwindow* window, int button, int action, int mods) {
@@ -61,15 +67,15 @@ void mouseCallback(GLFWwindow* window, int button, int action, int mods) {
 }
 
 void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
-    if (!ViewPtr) return;
+    if (!viewPtr) return;
     double mx, my;
     glfwGetCursorPos(window, &mx, &my);
-    ViewPtr->zoomAt((float)mx, (float)my, powf(1.2f, (float)yoffset));
+    viewPtr->zoomAt((float)mx, (float)my, powf(1.2f, (float)yoffset));
 }
 
 void cursorPosCallback(GLFWwindow* window, double x, double y) {
-    if (panning && ViewPtr) {
-        ViewPtr->pan((float)(x - lastMouseX), (float)(y - lastMouseY));
+    if (panning && viewPtr) {
+        viewPtr->pan((float)(x - lastMouseX), (float)(y - lastMouseY));
         lastMouseX = x;
         lastMouseY = y;
     }
@@ -130,14 +136,13 @@ int main()
 
     unsigned int canvasShader = createShader("canvas.vert", "canvas.frag");
    
-    Canvas canvas = Canvas(320, 180);
-    canvas.at(0, 0) = Color{ 255, 0, 0, 1 };                    // crveno, gore levo
-    canvas.at(canvas.w - 1, 0) = Color{ 0, 255, 0, 1 };         // zeleno, gore desno
-    canvas.at(0, canvas.h - 1) = Color{ 0, 0, 255, 1 };         // plavo, dole levo
+    Canvas canvas(3, 2);
+    canvas.at(0, 0) = Color{ 1, 0, 0, 1 };
+
     Workspace workspace = Workspace{ 0.0f, 0.0f, windowWidth, windowHeight };
 
     View view(canvas, workspace, 15);
-    ViewPtr = &view;
+    viewPtr = &view;
     canvasPtr = &canvas;
 
     populateVBO(VAO, quadVBO, colorVBO, canvas);
