@@ -5,9 +5,17 @@
 #include <chrono>
 #include <thread>
 #include "shaderUtil.h"
+#include "Canvas.h"
 
 
 float uAspectRatio = 1.0f;
+float windowWidth;
+float windowHeight;
+
+View* gView = nullptr;
+bool panning = false;
+double lastMouseX = 0, lastMouseY = 0;
+
 const auto frameDuration = std::chrono::microseconds(1000000 / 75);
 
 int endProgram(std::string message) {
@@ -24,6 +32,30 @@ void keyboardCallback(GLFWwindow* window, int key, int scancode, int action, int
 }
 
 void mouseCallback(GLFWwindow* window, int button, int action, int mods) {
+    if (button == GLFW_MOUSE_BUTTON_MIDDLE) {
+        if (action == GLFW_PRESS) {
+            panning = true;
+            glfwGetCursorPos(window, &lastMouseX, &lastMouseY);
+        }
+        else if (action == GLFW_RELEASE) {
+            panning = false;
+        }
+    }
+}
+
+void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
+    if (!gView) return;
+    double mx, my;
+    glfwGetCursorPos(window, &mx, &my);
+    gView->zoomAt((float)mx, (float)my, powf(1.2f, (float)yoffset));
+}
+
+void cursorPosCallback(GLFWwindow* window, double x, double y) {
+    if (panning && gView) {
+        gView->pan((float)(x - lastMouseX), (float)(y - lastMouseY));
+        lastMouseX = x;
+        lastMouseY = y;
+    }
 }
 
 GLFWwindow* createFullscreenWindow() {
@@ -31,8 +63,30 @@ GLFWwindow* createFullscreenWindow() {
     GLFWmonitor* monitor = glfwGetPrimaryMonitor();
     const GLFWvidmode* mode = glfwGetVideoMode(monitor);
     uAspectRatio = (float)mode->width / mode->height;
+    windowWidth = mode->width;
+    windowHeight = mode->height;
 
     return glfwCreateWindow(mode->width, mode->height, "MiniPaint", monitor, NULL);
+}
+
+void populateVBO(unsigned int &VAO, unsigned int &quadVBO, unsigned int &colorVBO, Canvas &canvas) {
+    glGenVertexArrays(1, &VAO);
+    glBindVertexArray(VAO);
+
+    float quad[] = { 0,0,  1,0,  0,1,   1,0,  1,1,  0,1 };
+    glGenBuffers(1, &quadVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(quad), quad, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glGenBuffers(1, &colorVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, colorVBO);
+    glBufferData(GL_ARRAY_BUFFER, canvas.cells.size() * sizeof(Color),
+        canvas.cells.data(), GL_DYNAMIC_DRAW);
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_TRUE, sizeof(Color), (void*)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribDivisor(1, 1);  
 }
 
 int main()
@@ -55,33 +109,18 @@ int main()
     if (glewInit() != GLEW_OK) return endProgram("GLEW failed to initialize");
 
     unsigned int canvasShader = createShader("canvas.vert", "canvas.frag");
+   
+    Canvas canvas = Canvas(10000, 1000);
+    Workspace workspace = Workspace{ 0.0f, 0.0f, windowWidth, windowHeight };
 
-    float vertices[] = {
-        //   x      y       r     g     b        s     t
-           -0.2f,  0.2f,   0.0f, 0.0f, 1.0f,    0.0f, 1.0f, // gornje levo teme
-           -0.2f, -0.2f,   0.0f, 1.0f, 0.0f,    0.0f, 0.0f, // donje levo teme
-            0.2f, -0.2f,   1.0f, 0.0f, 0.0f,    1.0f, 0.0f, // donje desno teme
-            0.2f,  0.2f,   0.0f, 1.0f, 1.0f,    1.0f, 1.0f, // gornje desno teme
-    };
+    View view(canvas, workspace, 15);
+    gView = &view;
 
     unsigned int VAO;
-    unsigned int VBO;
+    unsigned int quadVBO;
+    unsigned int colorVBO;
 
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-
-    glBindVertexArray(VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)(2 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)(5 * sizeof(float)));
-    glEnableVertexAttribArray(2);
+    populateVBO(VAO, quadVBO, colorVBO, canvas);
 
     glClearColor(247.0f / 255.0f,
         247.0f / 255.0f,
@@ -96,12 +135,20 @@ int main()
 
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glUseProgram(canvasShader);
+        glfwSetScrollCallback(window, scrollCallback);
+        glfwSetCursorPosCallback(window, cursorPosCallback);
+        glfwSetKeyCallback(window, keyboardCallback);
+        glfwSetMouseButtonCallback(window, mouseCallback);
 
+        glUseProgram(canvasShader);
+        glUniform1f(glGetUniformLocation(canvasShader, "uCellSize"), (float)view.cellSize);
+        glUniform2f(glGetUniformLocation(canvasShader, "uOrigin"), view.originX, view.originY);
+        glUniform2f(glGetUniformLocation(canvasShader, "uWindowMeasures"), windowWidth, windowHeight);
+        glUniform1i(glGetUniformLocation(canvasShader, "uCanvasWidth"), canvas.w);
         glUniform1f(glGetUniformLocation(canvasShader, "uAspectRatio"), uAspectRatio);
 
         glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+        glDrawArraysInstanced(GL_TRIANGLES, 0, 6, canvas.w * canvas.h);
 
         glfwSwapBuffers(window); 
         glfwPollEvents();
