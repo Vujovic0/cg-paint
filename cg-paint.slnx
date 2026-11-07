@@ -3,5 +3,5 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="cg-paint/cg-paint.vcxproj" />
+  <Project Path="cg-paint/cg-paint.vcxproj" Id="dacade51-2857-41ec-b3d4-3716deeac9f5" />
 </Solution>
