@@ -2,7 +2,13 @@
 #include <GLFW/glfw3.h>
 
 #include <iostream>
+#include <chrono>
+#include <thread>
 #include "shaderUtil.h"
+
+
+float uAspectRatio = 1.0f;
+const auto frameDuration = std::chrono::microseconds(1000000 / 75);
 
 int endProgram(std::string message) {
     std::cout << message << std::endl;
@@ -11,11 +17,22 @@ int endProgram(std::string message) {
 }
 
 void keyboardCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+        std::cout << "User pressed escape" << std::endl;
+        glfwSetWindowShouldClose(window, GLFW_TRUE);
+    }
 }
 
 void mouseCallback(GLFWwindow* window, int button, int action, int mods) {
+}
 
+GLFWwindow* createFullscreenWindow() {
+
+    GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+    const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+    uAspectRatio = (float)mode->width / mode->height;
+
+    return glfwCreateWindow(mode->width, mode->height, "MiniPaint", monitor, NULL);
 }
 
 int main()
@@ -25,9 +42,12 @@ int main()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    GLFWwindow* window = glfwCreateWindow(800, 800, "MiniPaint", NULL, NULL);
+
+    GLFWwindow* window = createFullscreenWindow();
     if (window == NULL) return endProgram("Window failed to be created");
+    
     glfwMakeContextCurrent(window);
+    glfwFocusWindow(window);
 
     glfwSetKeyCallback(window, keyboardCallback);
     glfwSetMouseButtonCallback(window, mouseCallback);
@@ -63,23 +83,34 @@ int main()
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)(5 * sizeof(float)));
     glEnableVertexAttribArray(2);
 
-    glClearColor(0.5f, 0.6f, 1.0f, 1.0f);
+    glClearColor(247.0f / 255.0f,
+        247.0f / 255.0f,
+        242.0f / 255.0f, 1.0f);
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     while (!glfwWindowShouldClose(window))
     {
+        auto frameStart = std::chrono::steady_clock::now();
 
         glClear(GL_COLOR_BUFFER_BIT);
 
         glUseProgram(basicShader);
+
+        glUniform1f(glGetUniformLocation(basicShader, "uAspectRatio"), uAspectRatio);
 
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
         glfwSwapBuffers(window); 
         glfwPollEvents();
+
+
+        auto frameEnd = std::chrono::steady_clock::now();
+        auto elapsed = frameEnd - frameStart;
+        if (elapsed < frameDuration)
+            std::this_thread::sleep_for(frameDuration - elapsed);
     }
 
     glfwTerminate();
