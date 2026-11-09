@@ -139,9 +139,15 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="callbacks.cpp" />
     <ClCompile Include="Canvas.cpp" />
+    <ClCompile Include="CanvasView.cpp" />
+    <ClCompile Include="CanvasView.h" />
+    <ClCompile Include="globals.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="resize.cpp" />
     <ClCompile Include="shaderUtil.cpp" />
+    <ClCompile Include="vboHandling.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="canvas.frag" />
@@ -150,8 +156,14 @@
     <None Include="preview.vert" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="callbacks.h" />
     <ClInclude Include="Canvas.h" />
+    <ClInclude Include="edge.h" />
+    <ClInclude Include="globals.h" />
+    <ClInclude Include="resize.h" />
     <ClInclude Include="shaderUtil.h" />
+    <ClInclude Include="structs.h" />
+    <ClInclude Include="vboHandling.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

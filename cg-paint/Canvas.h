@@ -1,11 +1,9 @@
 #pragma once
 #include <vector>
 #include <stdexcept>
+#include "structs.h"
 
-struct Color { unsigned char r, g, b, a; };
-struct Vec2 { float x, y; };
-struct Cell { int x, y; };
-struct Workspace { float x, y, width, height; };
+
 
 class Canvas {
 private:
@@ -24,17 +22,3 @@ public:
     void rotateClockwise();
 };
 
-class View {
-public:
-    float cellSize;
-    float originX;
-    float originY;
-    float marginPercent;
-    Workspace workspace;
-    void fit(const Canvas& canvas);
-    View(const Canvas& canvas, Workspace ws, float marginPercent) : workspace(ws), marginPercent(marginPercent) { fit(canvas); };
-    Cell screenToCell(float sx, float sy) const { return Cell{ (int)floor((sx - originX) / cellSize), (int)floor((sy - originY) / cellSize) }; };
-    Vec2 cellToScreen(int cx, int cy) const { return Vec2{ cx * cellSize + originX, cy * cellSize + originY }; };
-    void zoomAt(float mx, float my, float factor);
-    void pan(float dx, float dy) { originX += dx; originY += dy; };
-};
