@@ -17,7 +17,7 @@ public:
     std::vector<Color> cells;
     Canvas(int w, int h) : w(w), h(h), cells(w* h, Color{ 255, 255, 255, 255 }) {}
     Color& at(int x, int y) { if (inside(x, y)) return cells[y * w + x]; else throw std::out_of_range("Canvas coordinates out of range");};
-    void resize(int newW, int newH);
+    void resize(int newW, int newH, int offX, int offY);
     void flipVertical();
     void flipHorizontal();
     void rotateCounterClockwise();

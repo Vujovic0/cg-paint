@@ -146,6 +146,8 @@
   <ItemGroup>
     <None Include="canvas.frag" />
     <None Include="canvas.vert" />
+    <None Include="preview.frag" />
+    <None Include="preview.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Canvas.h" />

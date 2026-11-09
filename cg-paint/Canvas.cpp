@@ -2,18 +2,14 @@
 #include <math.h>
 #include "Canvas.h"
 
-void Canvas::resize(int newW, int newH) {
-    std::vector<Color> newCells(
-        newW * newH,
-        Color{ 0, 0, 0, 255 }
-    );
+void Canvas::resize(int newW, int newH, int offX, int offY) {
+    std::vector<Color> newCells(newW * newH, Color{ 255, 255, 255, 255 });
 
-    int copyW = std::min(w, newW);
-    int copyH = std::min(h, newH);
-
-    for (int y = 0; y < copyH; y++) {
-        for (int x = 0; x < copyW; x++) {
-            newCells[y * newW + x] = cells[y * w + x];
+    for (int y = 0; y < newH; y++) {
+        for (int x = 0; x < newW; x++) {
+            int ox = x + offX, oy = y + offY;
+            if (inside(ox, oy))
+                newCells[y * newW + x] = cells[oy * w + ox];
         }
     }
 

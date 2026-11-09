@@ -32,6 +32,12 @@
     <None Include="canvas.frag">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="preview.vert">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="preview.frag">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="shaderUtil.h">
