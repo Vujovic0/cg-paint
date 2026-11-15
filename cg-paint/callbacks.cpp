@@ -8,6 +8,7 @@
 #include "edge.h"
 #include "constants.h"
 #include <algorithm>
+#include "paintAt.h"
 
 void keyboardCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
@@ -15,9 +16,9 @@ void keyboardCallback(GLFWwindow* window, int key, int scancode, int action, int
         glfwSetWindowShouldClose(window, GLFW_TRUE);
     }
     if (action == GLFW_PRESS) {
-        if (key == GLFW_KEY_1) gbs::cursorPtr->shape = CursorShape::CIRCLE;
-        if (key == GLFW_KEY_2) gbs::cursorPtr->shape = CursorShape::TRIANGLE;
-        if (key == GLFW_KEY_3) gbs::cursorPtr->shape = CursorShape::SQUARE;
+        if (key == GLFW_KEY_1) { gbs::cursorPtr->shape = CursorShape::CIRCLE;   gbs::cursorPtr->rebuildStamp(); }
+        if (key == GLFW_KEY_2) { gbs::cursorPtr->shape = CursorShape::TRIANGLE; gbs::cursorPtr->rebuildStamp(); }
+        if (key == GLFW_KEY_3) { gbs::cursorPtr->shape = CursorShape::SQUARE;   gbs::cursorPtr->rebuildStamp(); }
         if (key == GLFW_KEY_H) { gbs::canvasPtr->flipHorizontal(); uploadColors(gbs::colorVBO, *gbs::canvasPtr); }
         if (key == GLFW_KEY_V) { gbs::canvasPtr->flipVertical();   uploadColors(gbs::colorVBO, *gbs::canvasPtr); }
     }
@@ -54,6 +55,9 @@ void mouseCallback(GLFWwindow* window, int button, int action, int mods) {
                 gbs::pendingOffX = 0;
                 gbs::pendingOffY = 0;
             }
+            else {
+                paintAt(window);
+            }
         }
         else if (action == GLFW_RELEASE) {
             if (gbs::resizing)
@@ -73,7 +77,9 @@ void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
 
     if (!ctrl) {
         gbs::cursorPtr->size *= powf(1.1f, (float)yoffset);
-        gbs::cursorPtr->size = std::clamp(gbs::cursorPtr->size, constants::MIN_CURSOR_SIZE, constants::MAX_CURSOR_SIZE);
+        gbs::cursorPtr->size = std::clamp(gbs::cursorPtr->size,
+            constants::MIN_CURSOR_SIZE, constants::MAX_CURSOR_SIZE);
+        gbs::cursorPtr->rebuildStamp();
         return;
     }
 

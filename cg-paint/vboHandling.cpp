@@ -6,6 +6,7 @@
 #include <GLFW/glfw3.h>
 #include <cstddef>
 #include "Vertex.h"
+#include <map>
 
 void reallocColors() {
     glBindBuffer(GL_ARRAY_BUFFER, gbs::colorVBO);
@@ -59,4 +60,31 @@ void uploadColors(unsigned int colorVBO, const Canvas& canvas) {
     glBufferSubData(GL_ARRAY_BUFFER, 0,
         canvas.cells.size() * sizeof(Color),
         canvas.cells.data());
+}
+
+void uploadCells(const std::vector<Cell>& changed) {
+    if (changed.empty()) return;
+    Canvas& cv = *gbs::canvasPtr;
+
+    std::map<int, std::pair<int, int>> rows;
+    for (const Cell& c : changed) {
+        auto it = rows.find(c.y);
+        if (it == rows.end()) {
+            rows[c.y] = { c.x, c.x };
+        }
+        else {
+            it->second.first = std::min(it->second.first, c.x);
+            it->second.second = std::max(it->second.second, c.x);
+        }
+    }
+
+    glBindBuffer(GL_ARRAY_BUFFER, gbs::colorVBO);
+    for (const auto& [y, range] : rows) {
+        size_t first = (size_t)y * cv.w + range.first;
+        size_t count = (size_t)(range.second - range.first + 1);
+        glBufferSubData(GL_ARRAY_BUFFER,
+            first * sizeof(Color),
+            count * sizeof(Color),
+            &cv.cells[first]);
+    }
 }

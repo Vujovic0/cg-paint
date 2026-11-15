@@ -75,6 +75,7 @@ int main()
 
     float maxDim = (float)std::max(gbs::canvas.w, gbs::canvas.h);
     gbs::cursor.size = std::clamp(maxDim / 200.0f, 0.5f, constants::MAX_CURSOR_SIZE);
+    gbs::cursor.rebuildStamp();
 
     populateVBO(gbs::canvas);
 

@@ -49,3 +49,22 @@ std::vector<Vertex> Cursor::createSquare(float cellSize, double mx, double my) {
 
     return { tl, tr, br, bl};
 }
+
+void Cursor::rebuildStamp() {
+    stamp.clear();
+    int R = (int)ceilf(size);
+    for (int dy = -R; dy <= R; dy++) {
+        for (int dx = -R; dx <= R; dx++) {
+            bool in = false;
+            switch (shape) {
+            case CursorShape::CIRCLE:
+                in = dx * dx + dy * dy <= size * size; break;
+            case CursorShape::SQUARE:
+                in = abs(dx) <= size && abs(dy) <= size; break;
+            case CursorShape::TRIANGLE:
+                in = abs(dx) <= (dy + R) * 0.5f; break;
+            }
+            if (in) stamp.push_back(Cell{ dx, dy });
+        }
+    }
+}

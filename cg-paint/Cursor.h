@@ -10,6 +10,7 @@ private:
 	std::vector<Vertex> createTriangle(float cellSize, double mx, double my);
 	std::vector<Vertex> createSquare(float cellSize, double mx, double my);
 public:
+	std::vector<Cell> stamp;
 	CursorShape shape;
 	float size;
 	Color color = Colors::BLACK;
@@ -17,4 +18,5 @@ public:
 	Cursor() : shape(CursorShape::CIRCLE), size(8) {};
 	Cursor(CursorShape shape, float size) : shape(shape), size(size) {};
 	std::vector<Vertex> generateVertices(float cellSize, double mx, double my);
+	void rebuildStamp();
 };
