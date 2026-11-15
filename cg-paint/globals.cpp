@@ -49,4 +49,8 @@ namespace gbs {
 	GLFWcursor* curNESW = nullptr;
 
 	CursorShape cursorShape = CursorShape::CIRCLE;
+
+	bool painting = false;
+	int lastPaintX = 0;
+	int lastPaintY = 0;
 }

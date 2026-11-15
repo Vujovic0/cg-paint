@@ -1,4 +1,4 @@
 #pragma once
 #include "globals.h"
 
-void paintAt(GLFWwindow* window);
+void paintAt(GLFWwindow* window, bool first);

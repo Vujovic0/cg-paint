@@ -56,7 +56,8 @@ void mouseCallback(GLFWwindow* window, int button, int action, int mods) {
                 gbs::pendingOffY = 0;
             }
             else {
-                paintAt(window);
+                gbs::painting = true;
+                paintAt(window, true);
             }
         }
         else if (action == GLFW_RELEASE) {
@@ -64,6 +65,7 @@ void mouseCallback(GLFWwindow* window, int button, int action, int mods) {
                 finishResize();
             gbs::resizing = false;
             gbs::resizeEdges = 0;
+            gbs::painting = false;
         }
     }
 }
@@ -101,6 +103,7 @@ void cursorPosCallback(GLFWwindow* window, double x, double y) {
     }
     else {
         updateCursor(window, detectEdges((float)x, (float)y));
+        if (gbs::painting) paintAt(window, false);
     }
 }
 

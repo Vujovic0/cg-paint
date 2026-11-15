@@ -100,7 +100,7 @@ int main()
         glUniform1f(glGetUniformLocation(canvasShader, "uAspectRatio"), uAspectRatio);
 
         glBindVertexArray(gbs::canvasVAO);
-        glDrawArraysInstanced(GL_TRIANGLES, 0, 6, gbs::canvas.w * gbs::canvas.h);
+        glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, gbs::canvas.w * gbs::canvas.h);
         drawCursor(window, basicShader, *gbs::cursorPtr);
         if (gbs::resizing) drawResizePreview(basicShader);
         glfwSwapBuffers(window); 

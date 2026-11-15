@@ -18,8 +18,7 @@ void populateVBO(Canvas& canvas) {
     glGenVertexArrays(1, &gbs::canvasVAO);
     glBindVertexArray(gbs::canvasVAO);
 
-    float quad[] = { 0,0,  1,0,  0,1,   
-                     1,0,  1,1,  0,1 };
+    float quad[] = { 0,0,  1,0,  0,1, 1,1};
     glGenBuffers(1, &gbs::quadVBO);
     glBindBuffer(GL_ARRAY_BUFFER, gbs::quadVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(quad), quad, GL_STATIC_DRAW);

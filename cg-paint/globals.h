@@ -48,4 +48,8 @@ namespace gbs {
 	extern GLFWcursor* curNESW;
 
 	extern CursorShape cursorShape;
+
+	extern bool painting;
+	extern int lastPaintX;
+	extern int lastPaintY;
 }
