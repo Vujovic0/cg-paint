@@ -1,21 +1,31 @@
 #include "globals.h"
+#include "cursorShape.h"
+
 
 namespace gbs {
 	float windowWidth = 0.0f;
 	float windowHeight = 0.0f;
 
 	Workspace workspace = Workspace{ 0.0f, 0.0f, 0.0f, 0.0f };
-	Canvas canvas = Canvas(320, 180);
+	Canvas canvas = Canvas(1920, 1200);
 	CanvasView canvasView = CanvasView(canvas, workspace, 15);
+	Cursor cursor = Cursor(CursorShape::CIRCLE, 16.0f);
 
 	CanvasView* viewPtr = nullptr;
 	Canvas* canvasPtr = nullptr;
+	Cursor* cursorPtr = nullptr;
 
-	unsigned int VAO;
+
+
+	unsigned int canvasVAO;
 	unsigned int quadVBO;
 	unsigned int colorVBO;
+
 	unsigned int previewVAO;
 	unsigned int previewVBO;
+
+	unsigned int cursorVAO;
+	unsigned int cursorVBO;
 
 	const float grabPx = 8.0f;
 	const int maxCanvasSize = 4096;
@@ -37,4 +47,6 @@ namespace gbs {
 	GLFWcursor* curV = nullptr;
 	GLFWcursor* curNWSE = nullptr;
 	GLFWcursor* curNESW = nullptr;
+
+	CursorShape cursorShape = CursorShape::CIRCLE;
 }

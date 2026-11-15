@@ -6,6 +6,8 @@
 #include "vboHandling.h"
 #include "resize.h"
 #include "edge.h"
+#include "constants.h"
+#include <algorithm>
 
 void keyboardCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
@@ -13,6 +15,9 @@ void keyboardCallback(GLFWwindow* window, int key, int scancode, int action, int
         glfwSetWindowShouldClose(window, GLFW_TRUE);
     }
     if (action == GLFW_PRESS) {
+        if (key == GLFW_KEY_1) gbs::cursorPtr->shape = CursorShape::CIRCLE;
+        if (key == GLFW_KEY_2) gbs::cursorPtr->shape = CursorShape::TRIANGLE;
+        if (key == GLFW_KEY_3) gbs::cursorPtr->shape = CursorShape::SQUARE;
         if (key == GLFW_KEY_H) { gbs::canvasPtr->flipHorizontal(); uploadColors(gbs::colorVBO, *gbs::canvasPtr); }
         if (key == GLFW_KEY_V) { gbs::canvasPtr->flipVertical();   uploadColors(gbs::colorVBO, *gbs::canvasPtr); }
     }
@@ -62,6 +67,16 @@ void mouseCallback(GLFWwindow* window, int button, int action, int mods) {
 void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
     if (!gbs::viewPtr)
         return;
+
+    bool ctrl = glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS ||
+        glfwGetKey(window, GLFW_KEY_RIGHT_CONTROL) == GLFW_PRESS;
+
+    if (!ctrl) {
+        gbs::cursorPtr->size *= powf(1.1f, (float)yoffset);
+        gbs::cursorPtr->size = std::clamp(gbs::cursorPtr->size, constants::MIN_CURSOR_SIZE, constants::MAX_CURSOR_SIZE);
+        return;
+    }
+
     double mx, my;
     glfwGetCursorPos(window, &mx, &my);
     gbs::viewPtr->zoomAt((float)mx, (float)my, powf(1.2f, (float)yoffset));
@@ -109,14 +124,16 @@ void updateCursor(GLFWwindow* window, int edges) {
 
     GLFWcursor* c = nullptr;
     bool l = edges & EDGE_L, r = edges & EDGE_R, t = edges & EDGE_T, b = edges & EDGE_B;
-    if ((l && t) || (r && b)) 
-        c = gbs::curNWSE;
-    else if ((r && t) || (l && b)) 
-        c = gbs::curNESW;
-    else if (l || r) 
-        c = gbs::curH;
-    else if (t || b) 
-        c = gbs::curV;
+    if ((l && t) || (r && b))       c = gbs::curNWSE;
+    else if ((r && t) || (l && b))  c = gbs::curNESW;
+    else if (l || r)                c = gbs::curH;
+    else if (t || b)                c = gbs::curV;
 
-    glfwSetCursor(window, c);
+    if (edges == 0) {
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+    }
+    else {
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        glfwSetCursor(window, c);
+    }
 }

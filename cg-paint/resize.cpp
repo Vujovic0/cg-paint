@@ -5,6 +5,7 @@
 #include "resize.h"
 #include "edge.h"
 #include <cmath>
+#include "Vertex.h"
 
 void computeResize(float mx, float my) {
     Canvas& cv = *gbs::canvasPtr;
@@ -49,7 +50,12 @@ void drawResizePreview(unsigned int shader) {
     float y0 = gbs::viewPtr->originY + gbs::pendingOffY * cs;
     float x1 = x0 + gbs::pendingW * cs;
     float y1 = y0 + gbs::pendingH * cs;
-    float verts[] = { x0,y0,  x1,y0,  x1,y1,  x0,y1 };
+    Vertex verts[] = { 
+        {x0,y0, 210, 210, 210, 255},
+        {x1,y0, 210, 210, 210, 255}, 
+        {x1,y1, 210, 210, 210, 255},  
+        {x0,y1 ,210, 210, 210, 255}
+    };
 
     glUseProgram(shader);
     glUniform2f(glGetUniformLocation(shader, "uWindowMeasures"), gbs::windowWidth, gbs::windowHeight);

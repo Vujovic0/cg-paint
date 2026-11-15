@@ -11,6 +11,9 @@
 #include "resize.h"
 #include "edge.h"
 #include "callbacks.h"
+#include "drawCursor.h"
+#include <algorithm>
+#include "constants.h"
 
 
 float uAspectRatio = 1.0f;
@@ -63,11 +66,15 @@ int main()
     if (glewInit() != GLEW_OK) return endProgram("GLEW failed to initialize");
 
     unsigned int canvasShader = createShader("canvas.vert", "canvas.frag");
-    unsigned int previewShader = createShader("preview.vert", "preview.frag");
+    unsigned int basicShader = createShader("basic.vert", "basic.frag");
 
     gbs::canvas.at(0, 0) = Color{ 1, 0, 0, 1 };
     gbs::viewPtr = &gbs::canvasView;
     gbs::canvasPtr = &gbs::canvas;
+    gbs::cursorPtr = &gbs::cursor;
+
+    float maxDim = (float)std::max(gbs::canvas.w, gbs::canvas.h);
+    gbs::cursor.size = std::clamp(maxDim / 200.0f, 0.5f, constants::MAX_CURSOR_SIZE);
 
     populateVBO(gbs::canvas);
 
@@ -91,9 +98,10 @@ int main()
         glUniform1i(glGetUniformLocation(canvasShader, "uCanvasWidth"), gbs::canvas.w);
         glUniform1f(glGetUniformLocation(canvasShader, "uAspectRatio"), uAspectRatio);
 
-        glBindVertexArray(gbs::VAO);
+        glBindVertexArray(gbs::canvasVAO);
         glDrawArraysInstanced(GL_TRIANGLES, 0, 6, gbs::canvas.w * gbs::canvas.h);
-        if (gbs::resizing) drawResizePreview(previewShader);
+        drawCursor(window, basicShader, *gbs::cursorPtr);
+        if (gbs::resizing) drawResizePreview(basicShader);
         glfwSwapBuffers(window); 
         glfwPollEvents();
 
