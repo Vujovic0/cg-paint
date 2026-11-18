@@ -12,11 +12,11 @@ private:
 public:
 	std::vector<Cell> stamp;
 	CursorShape shape;
-	float size;
+	float radius;
 	Color color = Colors::BLACK;
 	bool mode = true;
-	Cursor() : shape(CursorShape::CIRCLE), size(8) {};
-	Cursor(CursorShape shape, float size) : shape(shape), size(size) {};
+	Cursor() : shape(CursorShape::CIRCLE), radius(8) {};
+	Cursor(CursorShape shape, float size) : shape(shape), radius(size) {};
 	std::vector<Vertex> generateVertices(float cellSize, double mx, double my);
 	void rebuildStamp();
 };

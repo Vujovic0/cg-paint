@@ -10,25 +10,39 @@
 #include <algorithm>
 #include "paintAt.h"
 
+static constexpr Color palette[] = {
+    Colors::WHITE,
+    Colors::BLACK,
+    Colors::RED,
+    Colors::GREEN,
+    Colors::BLUE
+};
+
+static constexpr size_t paletteSize = sizeof(palette) / sizeof(palette[0]);
+
 void keyboardCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
-        std::cout << "User pressed escape" << std::endl;
-        glfwSetWindowShouldClose(window, GLFW_TRUE);
-    }
     if (action == GLFW_PRESS) {
+        if (key == GLFW_KEY_ESCAPE) {
+            std::cout << "User pressed escape" << std::endl;
+            glfwSetWindowShouldClose(window, GLFW_TRUE);
+        }
         if (key == GLFW_KEY_1) { gbs::cursorPtr->shape = CursorShape::CIRCLE;   gbs::cursorPtr->rebuildStamp(); }
         if (key == GLFW_KEY_2) { gbs::cursorPtr->shape = CursorShape::TRIANGLE; gbs::cursorPtr->rebuildStamp(); }
         if (key == GLFW_KEY_3) { gbs::cursorPtr->shape = CursorShape::SQUARE;   gbs::cursorPtr->rebuildStamp(); }
         if (key == GLFW_KEY_H) { gbs::canvasPtr->flipHorizontal(); uploadColors(gbs::colorVBO, *gbs::canvasPtr); }
         if (key == GLFW_KEY_V) { gbs::canvasPtr->flipVertical();   uploadColors(gbs::colorVBO, *gbs::canvasPtr); }
-    }
-    if (key == GLFW_KEY_R && action == GLFW_PRESS) {
-        if (mods & GLFW_MOD_SHIFT)
-            gbs::canvasPtr->rotateCounterClockwise();
-        else
-            gbs::canvasPtr->rotateClockwise();
-        uploadColors(gbs::colorVBO, *gbs::canvasPtr);
-        gbs::viewPtr->fit();
+        if (key == GLFW_KEY_R) {
+            if (mods & GLFW_MOD_SHIFT)
+                gbs::canvasPtr->rotateCounterClockwise();
+            else
+                gbs::canvasPtr->rotateClockwise();
+            uploadColors(gbs::colorVBO, *gbs::canvasPtr);
+            gbs::viewPtr->fit();
+        }
+        if (key == GLFW_KEY_S) {
+            size_t randomIndex = std::rand() % paletteSize;
+            gbs::cursorPtr->color = palette[randomIndex];
+        }
     }
 }
 
@@ -66,6 +80,7 @@ void mouseCallback(GLFWwindow* window, int button, int action, int mods) {
             gbs::resizing = false;
             gbs::resizeEdges = 0;
             gbs::painting = false;
+            endStroke();
         }
     }
 }
@@ -78,8 +93,8 @@ void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
         glfwGetKey(window, GLFW_KEY_RIGHT_CONTROL) == GLFW_PRESS;
 
     if (!ctrl) {
-        gbs::cursorPtr->size *= powf(1.1f, (float)yoffset);
-        gbs::cursorPtr->size = std::clamp(gbs::cursorPtr->size,
+        gbs::cursorPtr->radius *= powf(1.1f, (float)yoffset);
+        gbs::cursorPtr->radius = std::clamp(gbs::cursorPtr->radius,
             constants::MIN_CURSOR_SIZE, constants::MAX_CURSOR_SIZE);
         gbs::cursorPtr->rebuildStamp();
         return;

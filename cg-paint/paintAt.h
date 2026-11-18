@@ -2,3 +2,4 @@
 #include "globals.h"
 
 void paintAt(GLFWwindow* window, bool first);
+void endStroke();

@@ -12,7 +12,7 @@ std::vector<Vertex> Cursor::generateVertices(float cellSize, double mx, double m
 }
 
 std::vector<Vertex> Cursor::createCircle(float cellSize, double mx, double my) {
-    const float r = cellSize * size;
+    const float r = cellSize * radius;
     const float PI = 3.14159265f;
     const float cx = (float)mx, cy = (float)my;
 
@@ -29,7 +29,7 @@ std::vector<Vertex> Cursor::createCircle(float cellSize, double mx, double my) {
 }
 
 std::vector<Vertex> Cursor::createTriangle(float cellSize, double mx, double my) {
-    const float h = cellSize * size;
+    const float h = cellSize * radius;
     const float cx = (float)mx, cy = (float)my;
     return {
         { cx,     cy - h, color.r, color.g, color.b, color.a },
@@ -39,7 +39,7 @@ std::vector<Vertex> Cursor::createTriangle(float cellSize, double mx, double my)
 }
 
 std::vector<Vertex> Cursor::createSquare(float cellSize, double mx, double my) {
-    const float h = cellSize * size;
+    const float h = cellSize * radius;
     const float cx = (float)mx, cy = (float)my;
 
     Vertex tl = { cx - h, cy - h, color.r, color.g, color.b, color.a };
@@ -52,17 +52,23 @@ std::vector<Vertex> Cursor::createSquare(float cellSize, double mx, double my) {
 
 void Cursor::rebuildStamp() {
     stamp.clear();
-    int R = (int)ceilf(size);
-    for (int dy = -R; dy <= R; dy++) {
-        for (int dx = -R; dx <= R; dx++) {
+    int radius = (int)ceilf(this->radius);
+    for (int dy = -radius; dy <= radius; dy++) {
+        for (int dx = -radius; dx <= radius; dx++) {
             bool in = false;
             switch (shape) {
             case CursorShape::CIRCLE:
-                in = dx * dx + dy * dy <= size * size; break;
+                if (radius < 5)
+                    in = dx * dx + dy * dy <= radius * radius; 
+                else
+                    in = dx * dx + dy * dy < radius * radius;
+                break;
             case CursorShape::SQUARE:
-                in = abs(dx) <= size && abs(dy) <= size; break;
+                in = abs(dx) <= radius && abs(dy) <= radius; 
+                break;
             case CursorShape::TRIANGLE:
-                in = abs(dx) <= (dy + R) * 0.5f; break;
+                in = abs(dx) <= (dy + radius) * 0.5f; 
+                break;
             }
             if (in) stamp.push_back(Cell{ dx, dy });
         }

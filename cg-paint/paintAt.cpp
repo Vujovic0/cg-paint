@@ -7,107 +7,190 @@
 #include <cstdlib>
 
 static bool hasLastPaint = false;
+static bool strokeActive = false;
 
-// raspon pokrivenih x po redu platna
-static std::vector<int> spanLo, spanHi;
+static std::vector<unsigned int> paintedCells;
+static unsigned int currentStroke = 0;
 
-// raspon stampa po njegovom redu (keširano)
-static std::vector<int> stLo, stHi;
-static int stMinDy = 0;
-static size_t stCount = (size_t)-1;
-static float stSize = -1.0f;
+static std::vector<int> spanLow;
+static std::vector<int> spanHigh;
+
+static std::vector<int> stampLow;
+static std::vector<int> stampHigh;
+static int stampMinDy = 0;
+static size_t stampCount = (size_t)-1;
+static float stampRadius = -1.0f;
 
 static void rebuildStampRows(const Cursor& c) {
-    if (c.stamp.size() == stCount && c.size == stSize) return;
-    stCount = c.stamp.size();
-    stSize = c.size;
+    if (c.stamp.size() == stampCount && c.radius == stampRadius) return;
+    stampCount = c.stamp.size();
+    stampRadius = c.radius;
 
-    int mn = INT_MAX, mx = INT_MIN;
-    for (const Cell& o : c.stamp) { mn = std::min(mn, o.y); mx = std::max(mx, o.y); }
-    if (c.stamp.empty()) { stLo.clear(); stHi.clear(); stMinDy = 0; return; }
-
-    stMinDy = mn;
-    stLo.assign(mx - mn + 1, INT_MAX);
-    stHi.assign(mx - mn + 1, INT_MIN);
+    int minY = INT_MAX;
+    int maxY = INT_MIN;
     for (const Cell& o : c.stamp) {
-        int i = o.y - mn;
-        stLo[i] = std::min(stLo[i], o.x);
-        stHi[i] = std::max(stHi[i], o.x);
+        minY = std::min(minY, o.y); 
+        maxY = std::max(maxY, o.y); 
     }
+    if (c.stamp.empty()) { 
+        stampLow.clear(); stampHigh.clear(); stampMinDy = 0; return; 
+    }
+
+    stampMinDy = minY;
+    stampLow.assign(maxY - minY + 1, INT_MAX);
+    stampHigh.assign(maxY - minY + 1, INT_MIN);
+    for (const Cell& o : c.stamp) {
+        int i = o.y - minY;
+        stampLow[i] = std::min(stampLow[i], o.x);
+        stampHigh[i] = std::max(stampHigh[i], o.x);
+    }
+}
+
+static Color blendColors(Color& src, Color& dst) {
+    unsigned int a = src.a;
+    unsigned int invA = 255 - a;
+
+    return {
+        (unsigned char)((src.r * a + dst.r * invA) / 255),
+        (unsigned char)((src.g * a + dst.g * invA) / 255),
+        (unsigned char)((src.b * a + dst.b * invA) / 255),
+        255
+    };
 }
 
 void paintAt(GLFWwindow* window, bool first) {
     double mx, my;
     glfwGetCursorPos(window, &mx, &my);
-    Cell cur = gbs::viewPtr->screenToCell((float)mx, (float)my);
+    Cell cursorCell = gbs::viewPtr->screenToCell((float)mx, (float)my);
 
-    Canvas& cv = *gbs::canvasPtr;
-    Cursor& c = *gbs::cursorPtr;
+    Canvas& canvasPtr = *gbs::canvasPtr;
+    Cursor& cursorPtr = *gbs::cursorPtr;
 
-    rebuildStampRows(c);
-    if ((int)spanLo.size() != cv.h) {
-        spanLo.assign(cv.h, INT_MAX);
-        spanHi.assign(cv.h, INT_MIN);
+    if (paintedCells.size() != canvasPtr.cells.size()) {
+        paintedCells.assign(canvasPtr.cells.size(), 0);
+        currentStroke = 0;
     }
 
-    int minY = cv.h, maxY = -1;
+    if (first || !strokeActive) {
+        ++currentStroke;
 
-    // doda pokrivenost jednog reda linije [lx0,lx1] na yl
+        if (currentStroke == 0) {
+            std::fill(paintedCells.begin(), paintedCells.end(), 0);
+            currentStroke = 1;
+        }
+
+        strokeActive = true;
+    }
+
+    if (paintedCells.size() != canvasPtr.cells.size()) {
+    paintedCells.assign(canvasPtr.cells.size(), 0);
+    currentStroke = 0;
+}
+
+    rebuildStampRows(cursorPtr);
+    if ((int)spanLow.size() != canvasPtr.h) {
+        spanLow.assign(canvasPtr.h, INT_MAX);
+        spanHigh.assign(canvasPtr.h, INT_MIN);
+    }
+
+    int minY = canvasPtr.h;
+    int maxY = -1;
+
     auto flushRow = [&](int yl, int lx0, int lx1) {
-        for (size_t i = 0; i < stLo.size(); ++i) {
-            if (stLo[i] > stHi[i]) continue;
-            int y = yl + stMinDy + (int)i;
-            if ((unsigned)y >= (unsigned)cv.h) continue;
-            spanLo[y] = std::min(spanLo[y], lx0 + stLo[i]);
-            spanHi[y] = std::max(spanHi[y], lx1 + stHi[i]);
+        for (size_t i = 0; i < stampLow.size(); ++i) {
+            if (stampLow[i] > stampHigh[i]) continue;
+            int y = yl + stampMinDy + (int)i;
+            if ((unsigned)y >= (unsigned)canvasPtr.h) continue;
+            spanLow[y] = std::min(spanLow[y], lx0 + stampLow[i]);
+            spanHigh[y] = std::max(spanHigh[y], lx1 + stampHigh[i]);
             minY = std::min(minY, y);
             maxY = std::max(maxY, y);
         }
-        };
+    };
 
-    int x0, y0;
-    if (first || !hasLastPaint) { x0 = cur.x; y0 = cur.y; hasLastPaint = true; }
-    else { x0 = gbs::lastPaintX; y0 = gbs::lastPaintY; }
-    int x1 = cur.x, y1 = cur.y;
+    int lastCursorCellX;
+    int lastCursorCellY;
 
-    int dx = std::abs(x1 - x0), sx = x0 < x1 ? 1 : -1;
-    int dy = -std::abs(y1 - y0), sy = y0 < y1 ? 1 : -1;
+    if (first || !hasLastPaint) { 
+        lastCursorCellX = cursorCell.x; 
+        lastCursorCellY = cursorCell.y; 
+        hasLastPaint = true; 
+    }
+    else { 
+        lastCursorCellX = gbs::lastPaintX; 
+        lastCursorCellY = gbs::lastPaintY; 
+    }
+    int currentCursorCellX = cursorCell.x;
+    int currentCursorCellY = cursorCell.y;
+
+    int dx = std::abs(currentCursorCellX - lastCursorCellX);
+    int sx = lastCursorCellX < currentCursorCellX ? 1 : -1;
+    int dy = -std::abs(currentCursorCellY - lastCursorCellY);
+    int sy = lastCursorCellY < currentCursorCellY ? 1 : -1;
     int err = dx + dy;
 
-    int rowY = y0, rowLo = x0, rowHi = x0;
+    int rowY = lastCursorCellY;
+    int colLo = lastCursorCellX;
+    int colHi = lastCursorCellX;
     while (true) {
-        if (y0 != rowY) {                 // prešli smo u novi red linije
-            flushRow(rowY, rowLo, rowHi);
-            rowY = y0; rowLo = rowHi = x0;
+        if (lastCursorCellY != rowY) {
+            flushRow(rowY, colLo, colHi);
+            rowY = lastCursorCellY; 
+            colLo = colHi = lastCursorCellX;
         }
         else {
-            rowLo = std::min(rowLo, x0);
-            rowHi = std::max(rowHi, x0);
+            colLo = std::min(colLo, lastCursorCellX);
+            colHi = std::max(colHi, lastCursorCellX);
         }
-        if (x0 == x1 && y0 == y1) break;
+        if (lastCursorCellX == currentCursorCellX && lastCursorCellY == currentCursorCellY) 
+            break;
         int e2 = 2 * err;
-        if (e2 >= dy) { err += dy; x0 += sx; }
-        if (e2 <= dx) { err += dx; y0 += sy; }
+        if (e2 >= dy) { 
+            err += dy; 
+            lastCursorCellX += sx; 
+        }
+        if (e2 <= dx) { 
+            err += dx; 
+            lastCursorCellY += sy; 
+        }
     }
-    flushRow(rowY, rowLo, rowHi);
+    flushRow(rowY, colLo, colHi);
 
-    gbs::lastPaintX = cur.x;
-    gbs::lastPaintY = cur.y;
+    gbs::lastPaintX = cursorCell.x;
+    gbs::lastPaintY = cursorCell.y;
 
     if (maxY < 0) return;
 
     glBindBuffer(GL_ARRAY_BUFFER, gbs::colorVBO);
     for (int y = minY; y <= maxY; ++y) {
-        int lo = std::max(spanLo[y], 0);
-        int hi = std::min(spanHi[y], cv.w - 1);
-        spanLo[y] = INT_MAX;
-        spanHi[y] = INT_MIN;
+        int lo = std::max(spanLow[y], 0);
+        int hi = std::min(spanHigh[y], canvasPtr.w - 1);
+        spanLow[y] = INT_MAX;
+        spanHigh[y] = INT_MIN;
         if (lo > hi) continue;
 
-        size_t idx = (size_t)y * cv.w + lo;
+        size_t idx = (size_t)y * canvasPtr.w + lo;
         size_t n = (size_t)(hi - lo + 1);
-        std::fill(cv.cells.begin() + idx, cv.cells.begin() + idx + n, c.color);
+        for (size_t i = 0; i < n; ++i) {
+            size_t cellIdx = idx + i;
+
+            if (paintedCells[cellIdx] == currentStroke)
+                continue;
+
+            paintedCells[cellIdx] = currentStroke;
+
+            canvasPtr.cells[cellIdx] = blendColors(
+                cursorPtr.color,
+                canvasPtr.cells[cellIdx]
+            );
+        }
         glBufferSubData(GL_ARRAY_BUFFER, idx * sizeof(Color),
-            n * sizeof(Color), &cv.cells[idx]);
+            n * sizeof(Color), &canvasPtr.cells[idx]);
     }
+}
+
+
+void endStroke() {
+    strokeActive = false;
+    hasLastPaint = false;
 }
