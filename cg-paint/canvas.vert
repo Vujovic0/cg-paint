@@ -5,15 +5,14 @@ layout(location = 1) in vec3 inCol;
 
 out vec4 chCol;
 
-uniform int uCanvasWidth;
+uniform int uCanvasCellWidth;
 uniform vec2 uOrigin;
 uniform float uCellSize;
 uniform vec2 uWindowMeasures;
-uniform float uAspectRatio;
 
 void main()
 {
-    vec2 cellVertexCoords = vec2(gl_InstanceID % uCanvasWidth, gl_InstanceID / uCanvasWidth) + inPos;
+    vec2 cellVertexCoords = vec2(gl_InstanceID % uCanvasCellWidth, gl_InstanceID / uCanvasCellWidth) + inPos;
     vec2 screenCoords = uOrigin + cellVertexCoords * uCellSize;
     vec2 ndc = screenCoords / uWindowMeasures * 2.0 - 1.0;
     ndc.y = -ndc.y;

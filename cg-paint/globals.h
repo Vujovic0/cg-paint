@@ -5,6 +5,7 @@
 #include "Cursor.h"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include "Minimap.h"
 
 
 namespace gbs {
@@ -17,6 +18,7 @@ namespace gbs {
 	extern Canvas* canvasPtr;
 	extern CanvasView* viewPtr;
 	extern Cursor* cursorPtr;
+	extern Minimap* minimapPtr;
  
 	extern unsigned int canvasVAO;
 	extern unsigned int quadVBO;
@@ -50,6 +52,6 @@ namespace gbs {
 	extern CursorShape cursorShape;
 
 	extern bool painting;
-	extern int lastPaintX;
-	extern int lastPaintY;
+	extern int lastPaintCellX;
+	extern int lastPaintCellY;
 }

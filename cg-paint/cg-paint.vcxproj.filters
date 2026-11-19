@@ -81,6 +81,12 @@
     <ClCompile Include="paintAt.cpp">
       <Filter>Source Files\functions</Filter>
     </ClCompile>
+    <ClCompile Include="Minimap.h">
+      <Filter>Header Files\classes</Filter>
+    </ClCompile>
+    <ClCompile Include="Minimap.cpp">
+      <Filter>Source Files\classes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="basic.vert">

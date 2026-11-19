@@ -14,6 +14,7 @@
 #include "drawCursor.h"
 #include <algorithm>
 #include "constants.h"
+#include "Minimap.h"
 
 
 float uAspectRatio = 1.0f;
@@ -79,6 +80,9 @@ int main()
 
     populateVBO(gbs::canvas);
 
+    Minimap minimap = Minimap(2, 2, gbs::windowWidth, gbs::windowHeight, 5);
+    gbs::minimapPtr = &minimap;
+
     glClearColor(247.0f / 255.0f,
         247.0f / 255.0f,
         242.0f / 255.0f, 1.0f);
@@ -96,11 +100,12 @@ int main()
         glUniform1f(glGetUniformLocation(canvasShader, "uCellSize"), (float)gbs::canvasView.cellSize);
         glUniform2f(glGetUniformLocation(canvasShader, "uOrigin"), gbs::canvasView.originX, gbs::canvasView.originY);
         glUniform2f(glGetUniformLocation(canvasShader, "uWindowMeasures"), gbs::windowWidth, gbs::windowHeight);
-        glUniform1i(glGetUniformLocation(canvasShader, "uCanvasWidth"), gbs::canvas.w);
+        glUniform1i(glGetUniformLocation(canvasShader, "uCanvasCellWidth"), gbs::canvas.w);
         glUniform1f(glGetUniformLocation(canvasShader, "uAspectRatio"), uAspectRatio);
 
         glBindVertexArray(gbs::canvasVAO);
         glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, gbs::canvas.w * gbs::canvas.h);
+        minimap.draw(canvasShader);
         drawCursor(window, basicShader, *gbs::cursorPtr);
         if (gbs::resizing) drawResizePreview(basicShader);
         glfwSwapBuffers(window); 

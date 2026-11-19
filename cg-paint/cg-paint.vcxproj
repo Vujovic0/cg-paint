@@ -148,6 +148,8 @@
     <ClCompile Include="drawCursor.cpp" />
     <ClCompile Include="globals.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Minimap.cpp" />
+    <ClCompile Include="Minimap.h" />
     <ClCompile Include="paintAt.cpp" />
     <ClCompile Include="resize.cpp" />
     <ClCompile Include="shaderUtil.cpp" />

@@ -117,8 +117,8 @@ void paintAt(GLFWwindow* window, bool first) {
         hasLastPaint = true; 
     }
     else { 
-        lastCursorCellX = gbs::lastPaintX; 
-        lastCursorCellY = gbs::lastPaintY; 
+        lastCursorCellX = gbs::lastPaintCellX; 
+        lastCursorCellY = gbs::lastPaintCellY; 
     }
     int currentCursorCellX = cursorCell.x;
     int currentCursorCellY = cursorCell.y;
@@ -156,8 +156,8 @@ void paintAt(GLFWwindow* window, bool first) {
     }
     flushRow(rowY, colLo, colHi);
 
-    gbs::lastPaintX = cursorCell.x;
-    gbs::lastPaintY = cursorCell.y;
+    gbs::lastPaintCellX = cursorCell.x;
+    gbs::lastPaintCellY = cursorCell.y;
 
     if (maxY < 0) return;
 

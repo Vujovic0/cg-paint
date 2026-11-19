@@ -59,6 +59,7 @@ void uploadColors(unsigned int colorVBO, const Canvas& canvas) {
     glBufferSubData(GL_ARRAY_BUFFER, 0,
         canvas.cells.size() * sizeof(Color),
         canvas.cells.data());
+    gbs::minimapPtr->reset();
 }
 
 void uploadCells(const std::vector<Cell>& changed) {

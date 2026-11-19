@@ -11,7 +11,6 @@
 #include "paintAt.h"
 
 static constexpr Color palette[] = {
-    Colors::WHITE,
     Colors::BLACK,
     Colors::RED,
     Colors::GREEN,
@@ -42,6 +41,9 @@ void keyboardCallback(GLFWwindow* window, int key, int scancode, int action, int
         if (key == GLFW_KEY_S) {
             size_t randomIndex = std::rand() % paletteSize;
             gbs::cursorPtr->color = palette[randomIndex];
+        }
+        if (key == GLFW_KEY_E) {
+            gbs::cursorPtr->color = Colors::WHITE;
         }
     }
 }

@@ -1,6 +1,7 @@
 #include <vector>
 #include <math.h>
 #include "Canvas.h"
+#include "globals.h"
 
 void Canvas::resize(int newW, int newH, int offX, int offY) {
     std::vector<Color> newCells(newW * newH, Color{ 255, 255, 255, 255 });

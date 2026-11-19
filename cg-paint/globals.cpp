@@ -14,6 +14,7 @@ namespace gbs {
 	CanvasView* viewPtr = nullptr;
 	Canvas* canvasPtr = nullptr;
 	Cursor* cursorPtr = nullptr;
+	Minimap* minimapPtr = nullptr;
 
 
 
@@ -51,6 +52,6 @@ namespace gbs {
 	CursorShape cursorShape = CursorShape::CIRCLE;
 
 	bool painting = false;
-	int lastPaintX = 0;
-	int lastPaintY = 0;
+	int lastPaintCellX = 0;
+	int lastPaintCellY = 0;
 }

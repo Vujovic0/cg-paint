@@ -2,6 +2,8 @@
 #include <cmath>
 #include "constants.h"
 
+constexpr int CIRCLE_RADIUS_SPIKE_TOLERANCE = 5;
+
 std::vector<Vertex> Cursor::generateVertices(float cellSize, double mx, double my) {
     switch (shape) {
     case CursorShape::CIRCLE:   return createCircle(cellSize, mx, my);
@@ -23,7 +25,7 @@ std::vector<Vertex> Cursor::createCircle(float cellSize, double mx, double my) {
     v.reserve(N);
     for (int i = 0; i < N; i++) {
         float a = 2.0f * PI * i / N;
-        v.push_back({ cx + cosf(a) * r, cy + sinf(a) * r, color.r, color.g, color.b, color.a });
+        v.push_back({ cx + cosf(a) * r, cy + sinf(a) * r, 0, 0, 0, 255 });
     }
     return v;
 }
@@ -32,9 +34,9 @@ std::vector<Vertex> Cursor::createTriangle(float cellSize, double mx, double my)
     const float h = cellSize * radius;
     const float cx = (float)mx, cy = (float)my;
     return {
-        { cx,     cy - h, color.r, color.g, color.b, color.a },
-        { cx - h, cy + h, color.r, color.g, color.b, color.a },
-        { cx + h, cy + h, color.r, color.g, color.b, color.a }
+        { cx,     cy - h, 0, 0, 0, 255 },
+        { cx - h, cy + h, 0, 0, 0, 255 },
+        { cx + h, cy + h, 0, 0, 0, 255 }
     };
 }
 
@@ -42,10 +44,10 @@ std::vector<Vertex> Cursor::createSquare(float cellSize, double mx, double my) {
     const float h = cellSize * radius;
     const float cx = (float)mx, cy = (float)my;
 
-    Vertex tl = { cx - h, cy - h, color.r, color.g, color.b, color.a };
-    Vertex tr = { cx + h, cy - h, color.r, color.g, color.b, color.a };
-    Vertex br = { cx + h, cy + h, color.r, color.g, color.b, color.a };
-    Vertex bl = { cx - h, cy + h, color.r, color.g, color.b, color.a };
+    Vertex tl = { cx - h, cy - h, 0, 0, 0, 255 };
+    Vertex tr = { cx + h, cy - h, 0, 0, 0, 255 };
+    Vertex br = { cx + h, cy + h, 0, 0, 0, 255 };
+    Vertex bl = { cx - h, cy + h, 0, 0, 0, 255 };
 
     return { tl, tr, br, bl};
 }
@@ -58,7 +60,7 @@ void Cursor::rebuildStamp() {
             bool in = false;
             switch (shape) {
             case CursorShape::CIRCLE:
-                if (radius < 5)
+                if (radius < CIRCLE_RADIUS_SPIKE_TOLERANCE)
                     in = dx * dx + dy * dy <= radius * radius; 
                 else
                     in = dx * dx + dy * dy < radius * radius;
