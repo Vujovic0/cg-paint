@@ -10,6 +10,8 @@ void drawBrush(GLFWwindow* window, unsigned int shader, Brush& cursor) {
     double mx, my;
     glfwGetCursorPos(window, &mx, &my);
 
+
+
     std::vector<Vertex> verts = cursor.generateVertices(gbs::viewPtr->cellSize, mx, my);
     if (verts.empty() || verts.size() > constants::MAX_CURSOR_VERTS) return;
 

@@ -17,6 +17,7 @@ static constexpr Color palette[] = {
     Colors::BLUE
 };
 
+static bool wasOnCanvas = false;
 static constexpr size_t paletteSize = sizeof(palette) / sizeof(palette[0]);
 
 void keyboardCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
@@ -136,7 +137,7 @@ void cursorPosCallback(GLFWwindow* window, double x, double y) {
         gbs::lastMouseY = y;
     }
     else {
-        updateCursor(window, detectEdges((float)x, (float)y));
+        updateCursor(window, detectEdges((float)x, (float)y), x, y);
         if (gbs::painting) paintAt(window, false);
     }
 }
@@ -161,9 +162,11 @@ int detectEdges(float mx, float my) {
     return e;
 }
 
-void updateCursor(GLFWwindow* window, int edges) {
-    if (edges == gbs::hoverEdges) return;
+void updateCursor(GLFWwindow* window, int edges, double mx, double my) {
+    bool onCanvas = gbs::viewPtr->isCursorIn(mx, my);
+    if (edges == gbs::hoverEdges && onCanvas == wasOnCanvas) return;
     gbs::hoverEdges = edges;
+    wasOnCanvas = onCanvas;
 
     GLFWcursor* c = nullptr;
     bool l = edges & EDGE_L, r = edges & EDGE_R, t = edges & EDGE_T, b = edges & EDGE_B;
@@ -173,6 +176,11 @@ void updateCursor(GLFWwindow* window, int edges) {
     else if (t || b)                c = gbs::curV;
 
     if (edges == 0) {
+        if (!onCanvas) {
+            glfwSetCursor(window, nullptr);
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+            return;
+        }
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
     }
     else {

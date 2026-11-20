@@ -107,10 +107,13 @@ int main()
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    double mx, my;
 
     while (!glfwWindowShouldClose(window))
     {
         auto frameStart = std::chrono::steady_clock::now();
+
+        glfwGetCursorPos(window, &mx, &my);
 
         glClear(GL_COLOR_BUFFER_BIT);
 
@@ -125,7 +128,9 @@ int main()
         glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, gbs::canvas.w * gbs::canvas.h);
         toolbar.draw(renderer);
         minimap.draw(canvasShader);
-        drawBrush(window, basicShader, *gbs::cursorPtr);
+        if (gbs::viewPtr->isCursorIn(mx, my)) {
+            drawBrush(window, basicShader, *gbs::cursorPtr);
+        }
         if (gbs::resizing) drawResizePreview(basicShader);
         glfwSwapBuffers(window); 
         glfwPollEvents();

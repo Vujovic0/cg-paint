@@ -7,5 +7,5 @@ void mouseCallback(GLFWwindow* window, int button, int action, int mods);
 void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 void cursorPosCallback(GLFWwindow* window, double x, double y);
 int detectEdges(float mx, float my);
-void updateCursor(GLFWwindow* window, int edges);
+void updateCursor(GLFWwindow* window, int edges, double mx, double my);
 void charCallback(GLFWwindow*, unsigned int codepoint);
