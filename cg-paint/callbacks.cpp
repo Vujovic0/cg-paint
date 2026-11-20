@@ -29,6 +29,8 @@ void keyboardCallback(GLFWwindow* window, int key, int scancode, int action, int
         if (gbs::toolbarPtr && gbs::toolbarPtr->hasFocus()) {
             if (key == GLFW_KEY_BACKSPACE && (action == GLFW_PRESS || action == GLFW_REPEAT))
                 gbs::toolbarPtr->onBackspace();
+            else if ((key == GLFW_KEY_ENTER || key == GLFW_KEY_KP_ENTER) && action == GLFW_PRESS)
+                gbs::toolbarPtr->submit();
             return; 
         }
         if (key == GLFW_KEY_1) { gbs::cursorPtr->shape = CursorShape::CIRCLE;   gbs::cursorPtr->rebuildStamp(); }
@@ -44,12 +46,8 @@ void keyboardCallback(GLFWwindow* window, int key, int scancode, int action, int
             uploadColors(gbs::colorVBO, *gbs::canvasPtr);
             gbs::viewPtr->fit();
         }
-        if (key == GLFW_KEY_S) {
-            size_t randomIndex = std::rand() % paletteSize;
-            gbs::cursorPtr->color = palette[randomIndex];
-        }
         if (key == GLFW_KEY_E) {
-            gbs::cursorPtr->color = Colors::WHITE;
+            gbs::cursorPtr->isBrush = !(gbs::cursorPtr->isBrush);
         }
         if (key == GLFW_KEY_BACKSPACE) {
             gbs::toolbarPtr->onBackspace();
@@ -175,16 +173,22 @@ void updateCursor(GLFWwindow* window, int edges, double mx, double my) {
     else if (l || r)                c = gbs::curH;
     else if (t || b)                c = gbs::curV;
 
-    if (edges == 0) {
-        if (!onCanvas) {
-            glfwSetCursor(window, nullptr);
-            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-            return;
-        }
+    if (edges != 0) {
+        GLFWcursor* c;
+        bool l = edges & EDGE_L, r = edges & EDGE_R, t = edges & EDGE_T, b = edges & EDGE_B;
+        if ((l && t) || (r && b))       c = gbs::curNWSE;
+        else if ((r && t) || (l && b))  c = gbs::curNESW;
+        else if (l || r)                c = gbs::curH;
+        else                            c = gbs::curV;
+
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        glfwSetCursor(window, c);
+    }
+    else if (onCanvas) {
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
     }
     else {
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-        glfwSetCursor(window, c);
+        glfwSetCursor(window, gbs::curPencil);
     }
 }

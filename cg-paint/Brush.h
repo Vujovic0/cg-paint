@@ -14,7 +14,7 @@ public:
 	CursorShape shape;
 	float radius;
 	Color color = Colors::BLACK;
-	bool isBrush = false;
+	bool isBrush = true;
 	Brush() : shape(CursorShape::CIRCLE), radius(8) {};
 	Brush(CursorShape shape, float size) : shape(shape), radius(size) {};
 	std::vector<Vertex> generateVertices(float cellSize, double mx, double my);

@@ -126,6 +126,9 @@
     <ClCompile Include="Renderer.cpp">
       <Filter>Source Files\classes</Filter>
     </ClCompile>
+    <ClCompile Include="controls.cpp">
+      <Filter>Source Files\functions</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="basic.vert">
@@ -144,6 +147,12 @@
       <Filter>Resource Files\shaders</Filter>
     </None>
     <None Include="text.frag">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="image.vert">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="image.frag">
       <Filter>Resource Files\shaders</Filter>
     </None>
   </ItemGroup>
@@ -205,5 +214,13 @@
     <ClInclude Include="Renderer.h">
       <Filter>Header Files\classes</Filter>
     </ClInclude>
+    <ClInclude Include="controls.h">
+      <Filter>Header Files\functions</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="pencil.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

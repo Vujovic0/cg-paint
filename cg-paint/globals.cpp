@@ -17,6 +17,7 @@ namespace gbs {
 	Brush* cursorPtr = nullptr;
 	Minimap* minimapPtr = nullptr;
 	Toolbar* toolbarPtr = nullptr;
+	GLFWcursor* curPencil;
 
 
 	unsigned int canvasVAO;

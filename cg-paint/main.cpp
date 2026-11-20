@@ -19,6 +19,7 @@
 #include "Renderer.h"
 #include "Toolbar.h"
 #include "drawBrush.h"
+#include "controls.h"
 
 
 float uAspectRatio = 1.0f;
@@ -47,6 +48,7 @@ GLFWwindow* createFullscreenWindow() {
 
 int main()
 {
+    printControls();
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -108,6 +110,10 @@ int main()
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     double mx, my;
+
+
+    toolbar.setColor(gbs::cursorPtr->color);
+    gbs::curPencil = loadImageToCursor("pencil.png");
 
     while (!glfwWindowShouldClose(window))
     {

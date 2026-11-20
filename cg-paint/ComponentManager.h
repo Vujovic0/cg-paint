@@ -19,4 +19,5 @@ public:
 		return components[index]->getValue();
 	}
 	bool hasFocus() const { return focused != -1; }
+	void setValue(size_t index, const std::string& v) { components[index]->setValue(v); }
 };

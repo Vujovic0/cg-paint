@@ -50,7 +50,6 @@ void InputField::onClick(int mx, int my) {
 }
 
 void InputField::onChar(char c) {
-    std::cout << "char " << c << " text=" << text << "\n";
     if (c >= '0' && c <= '9' && text.size() < 3)
         addCharacter(c);
 }
@@ -88,4 +87,9 @@ void InputField::draw(Renderer& r, bool focused) {
         int cx = textX + r.measureText(text.substr(0, cursorPosition));
         r.fillRect(cx, top + 4, 2, bounds.height - 8, { 0, 0, 0, 255 });
     }
+}
+
+void InputField::setValue(const std::string& v) {
+    text = v;
+    cursorPosition = selectionAnchor = text.size();
 }

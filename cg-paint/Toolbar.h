@@ -11,8 +11,6 @@ private:
     gmt::Rect bounds;
     ComponentManager manager;
     std::function<void(Color)> onSubmit;
-
-    void submit();
 public:
     Toolbar(int width, int height, int originX, int originY,
         std::function<void(Color)> onSubmit);
@@ -25,4 +23,6 @@ public:
     void onChar(char c) { manager.onChar(c); }
     void onBackspace() { manager.onBackspace(); }
     bool hasFocus() const { return manager.hasFocus(); }
+    void setColor(Color c);
+    void submit();
 };

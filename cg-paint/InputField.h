@@ -27,4 +27,5 @@ public:
     void onBackspace() override;
     void draw(Renderer& r, bool focused) override;
     std::string getValue() const override;
+    void setValue(const std::string& v) override;
 };

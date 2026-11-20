@@ -12,4 +12,5 @@ public:
     virtual void onBackspace() {}
     virtual void draw(Renderer& r, bool focused) = 0;
     virtual std::string getValue() const { return ""; }
+    virtual void setValue(const std::string&) {};
 };

@@ -52,6 +52,7 @@ namespace gbs {
 	extern GLFWcursor* curV;
 	extern GLFWcursor* curNWSE;
 	extern GLFWcursor* curNESW;
+	extern GLFWcursor* curPencil;
 
 	extern CursorShape cursorShape;
 

@@ -148,6 +148,7 @@
     <ClCompile Include="ComponentManager.cpp" />
     <ClCompile Include="ComponentManager.h" />
     <ClCompile Include="Brush.cpp" />
+    <ClCompile Include="controls.cpp" />
     <ClCompile Include="drawBrush.cpp" />
     <ClCompile Include="Geometry.cpp" />
     <ClCompile Include="globals.cpp" />
@@ -170,6 +171,8 @@
     <None Include="canvas.vert" />
     <None Include="basic.frag" />
     <None Include="basic.vert" />
+    <None Include="image.frag" />
+    <None Include="image.vert" />
     <None Include="text.frag" />
     <None Include="text.vert" />
   </ItemGroup>
@@ -180,6 +183,7 @@
     <ClInclude Include="Component.h" />
     <ClInclude Include="constants.h" />
     <ClInclude Include="Brush.h" />
+    <ClInclude Include="controls.h" />
     <ClInclude Include="cursorShape.h" />
     <ClInclude Include="drawBrush.h" />
     <ClInclude Include="edge.h" />
@@ -193,6 +197,9 @@
     <ClInclude Include="structs.h" />
     <ClInclude Include="vboHandling.h" />
     <ClInclude Include="Vertex.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="pencil.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

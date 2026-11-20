@@ -181,7 +181,7 @@ void paintAt(GLFWwindow* window, bool first) {
             paintedCells[cellIdx] = currentStroke;
 
             canvas.cells[cellIdx] = blendColors(
-                brush.color,
+                color,
                 canvas.cells[cellIdx]
             );
         }

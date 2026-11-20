@@ -13,7 +13,6 @@ void ComponentManager::addComponent(std::unique_ptr<Component> component) {
 }
 
 void ComponentManager::onClick(int mx, int my) {
-    std::cout << "click " << mx << "," << my << "\n";
     focused = -1;
     for (size_t i = 0; i < components.size(); i++) {
         if (components[i]->isClickedOn(mx, my)) {
@@ -25,7 +24,6 @@ void ComponentManager::onClick(int mx, int my) {
 }
 
 void ComponentManager::onChar(char c) {
-    std::cout << "onChar, focused=" << focused << "\n";
     if (focused != -1) components[focused]->onChar(c);
 }
 
