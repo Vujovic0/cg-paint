@@ -25,6 +25,11 @@ void keyboardCallback(GLFWwindow* window, int key, int scancode, int action, int
             std::cout << "User pressed escape" << std::endl;
             glfwSetWindowShouldClose(window, GLFW_TRUE);
         }
+        if (gbs::toolbarPtr && gbs::toolbarPtr->hasFocus()) {
+            if (key == GLFW_KEY_BACKSPACE && (action == GLFW_PRESS || action == GLFW_REPEAT))
+                gbs::toolbarPtr->onBackspace();
+            return; 
+        }
         if (key == GLFW_KEY_1) { gbs::cursorPtr->shape = CursorShape::CIRCLE;   gbs::cursorPtr->rebuildStamp(); }
         if (key == GLFW_KEY_2) { gbs::cursorPtr->shape = CursorShape::TRIANGLE; gbs::cursorPtr->rebuildStamp(); }
         if (key == GLFW_KEY_3) { gbs::cursorPtr->shape = CursorShape::SQUARE;   gbs::cursorPtr->rebuildStamp(); }
@@ -45,6 +50,9 @@ void keyboardCallback(GLFWwindow* window, int key, int scancode, int action, int
         if (key == GLFW_KEY_E) {
             gbs::cursorPtr->color = Colors::WHITE;
         }
+        if (key == GLFW_KEY_BACKSPACE) {
+            gbs::toolbarPtr->onBackspace();
+        }
     }
 }
 
@@ -62,6 +70,7 @@ void mouseCallback(GLFWwindow* window, int button, int action, int mods) {
         if (action == GLFW_PRESS) {
             double mx, my;
             glfwGetCursorPos(window, &mx, &my);
+            if (gbs::toolbarPtr) gbs::toolbarPtr->onClick((int)mx, (int)my);
             int e = detectEdges((float)mx, (float)my);
             if (e) {
                 gbs::resizing = true;
@@ -78,13 +87,21 @@ void mouseCallback(GLFWwindow* window, int button, int action, int mods) {
         }
         else if (action == GLFW_RELEASE) {
             if (gbs::resizing)
+            {
                 finishResize();
+                gbs::minimapPtr->reset();
+            }
+
             gbs::resizing = false;
             gbs::resizeEdges = 0;
             gbs::painting = false;
             endStroke();
         }
     }
+}
+
+void charCallback(GLFWwindow*, unsigned int codepoint) {
+    if (codepoint < 128) gbs::toolbarPtr->onChar((char)codepoint);
 }
 
 void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {

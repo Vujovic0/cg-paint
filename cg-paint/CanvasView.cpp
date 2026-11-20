@@ -27,3 +27,9 @@ void CanvasView::zoomAt(float mx, float my, float factor) {
     originY = my - (my - originY) * real;
     cellSize = newSize;
 }
+
+bool CanvasView::isCursorOn(int mx, int my) {
+    Cell c = screenToCell((float)mx, (float)my);
+    return c.x >= 0 && c.x < canvas.w &&
+        c.y >= 0 && c.y < canvas.h;
+}

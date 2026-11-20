@@ -4,7 +4,7 @@
 #include "Colors.h"
 #include <vector>
 
-class Cursor {
+class Brush {
 private:
 	std::vector<Vertex> createCircle(float cellSize, double mx, double my);
 	std::vector<Vertex> createTriangle(float cellSize, double mx, double my);
@@ -14,9 +14,9 @@ public:
 	CursorShape shape;
 	float radius;
 	Color color = Colors::BLACK;
-	bool mode = true;
-	Cursor() : shape(CursorShape::CIRCLE), radius(8) {};
-	Cursor(CursorShape shape, float size) : shape(shape), radius(size) {};
+	bool isBrush = false;
+	Brush() : shape(CursorShape::CIRCLE), radius(8) {};
+	Brush(CursorShape shape, float size) : shape(shape), radius(size) {};
 	std::vector<Vertex> generateVertices(float cellSize, double mx, double my);
 	void rebuildStamp();
 };

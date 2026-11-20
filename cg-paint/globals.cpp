@@ -1,5 +1,6 @@
 #include "globals.h"
 #include "cursorShape.h"
+#include "Toolbar.h"
 
 
 namespace gbs {
@@ -9,13 +10,13 @@ namespace gbs {
 	Workspace workspace = Workspace{ 0.0f, 0.0f, 0.0f, 0.0f };
 	Canvas canvas = Canvas(1920, 1200);
 	CanvasView canvasView = CanvasView(canvas, workspace, 15);
-	Cursor cursor = Cursor(CursorShape::CIRCLE, 16.0f);
+	Brush cursor = Brush(CursorShape::CIRCLE, 16.0f);
 
 	CanvasView* viewPtr = nullptr;
 	Canvas* canvasPtr = nullptr;
-	Cursor* cursorPtr = nullptr;
+	Brush* cursorPtr = nullptr;
 	Minimap* minimapPtr = nullptr;
-
+	Toolbar* toolbarPtr = nullptr;
 
 
 	unsigned int canvasVAO;
@@ -27,6 +28,9 @@ namespace gbs {
 
 	unsigned int cursorVAO;
 	unsigned int cursorVBO;
+
+	unsigned int rectVAO;
+	unsigned int rectVBO;
 
 	const float grabPx = 8.0f;
 	const int maxCanvasSize = 4096;

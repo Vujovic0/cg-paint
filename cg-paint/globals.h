@@ -2,23 +2,25 @@
 #include "Canvas.h"
 #include "CanvasView.h"
 #include "structs.h"
-#include "Cursor.h"
+#include "Brush.h"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "Minimap.h"
+#include "Toolbar.h"
 
 
 namespace gbs {
 	extern Canvas canvas;
 	extern CanvasView canvasView;
 	extern Workspace workspace;
-	extern Cursor cursor;
+	extern Brush cursor;
 	extern float windowWidth;
 	extern float windowHeight;
 	extern Canvas* canvasPtr;
 	extern CanvasView* viewPtr;
-	extern Cursor* cursorPtr;
+	extern Brush* cursorPtr;
 	extern Minimap* minimapPtr;
+	extern Toolbar* toolbarPtr;
  
 	extern unsigned int canvasVAO;
 	extern unsigned int quadVBO;
@@ -27,6 +29,8 @@ namespace gbs {
 	extern unsigned int previewVBO;
 	extern unsigned int cursorVAO;
 	extern unsigned int cursorVBO;
+	extern unsigned int rectVAO;
+	extern unsigned int rectVBO;
 
 	extern const float grabPx;
 	extern const int maxCanvasSize;

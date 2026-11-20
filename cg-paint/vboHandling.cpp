@@ -52,6 +52,16 @@ void populateVBO(Canvas& canvas) {
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (void*)offsetof(Vertex, r));
     glEnableVertexAttribArray(1);
+
+    glGenVertexArrays(1, &gbs::rectVAO);
+    glGenBuffers(1, &gbs::rectVBO);
+    glBindVertexArray(gbs::rectVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, gbs::rectVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 2 * 4 + 4 * 4, nullptr, GL_DYNAMIC_DRAW); 
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 12, (void*)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE, GL_TRUE, 12, (void*)8);
 }
 
 void uploadColors(unsigned int colorVBO, const Canvas& canvas) {

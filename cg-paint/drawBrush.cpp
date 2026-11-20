@@ -1,11 +1,11 @@
 #include <vector>
 #include "Vertex.h"
-#include "Cursor.h"
+#include "Brush.h"
 #include "constants.h"
 #include "globals.h"
-#include "drawCursor.h"
+#include "drawBrush.h"
 
-void drawCursor(GLFWwindow* window, unsigned int shader, Cursor& cursor) {
+void drawBrush(GLFWwindow* window, unsigned int shader, Brush& cursor) {
     if (gbs::resizing || gbs::hoverEdges != 0) return;
     double mx, my;
     glfwGetCursorPos(window, &mx, &my);

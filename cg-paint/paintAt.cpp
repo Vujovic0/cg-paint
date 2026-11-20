@@ -21,7 +21,7 @@ static int stampMinDy = 0;
 static size_t stampCount = (size_t)-1;
 static float stampRadius = -1.0f;
 
-static void rebuildStampRows(const Cursor& c) {
+static void rebuildStampRows(const Brush& c) {
     if (c.stamp.size() == stampCount && c.radius == stampRadius) return;
     stampCount = c.stamp.size();
     stampRadius = c.radius;
@@ -63,11 +63,11 @@ void paintAt(GLFWwindow* window, bool first) {
     glfwGetCursorPos(window, &mx, &my);
     Cell cursorCell = gbs::viewPtr->screenToCell((float)mx, (float)my);
 
-    Canvas& canvasPtr = *gbs::canvasPtr;
-    Cursor& cursorPtr = *gbs::cursorPtr;
+    Canvas& canvas = *gbs::canvasPtr;
+    Brush& brush = *gbs::cursorPtr;
 
-    if (paintedCells.size() != canvasPtr.cells.size()) {
-        paintedCells.assign(canvasPtr.cells.size(), 0);
+    if (paintedCells.size() != canvas.cells.size()) {
+        paintedCells.assign(canvas.cells.size(), 0);
         currentStroke = 0;
     }
 
@@ -82,25 +82,25 @@ void paintAt(GLFWwindow* window, bool first) {
         strokeActive = true;
     }
 
-    if (paintedCells.size() != canvasPtr.cells.size()) {
-    paintedCells.assign(canvasPtr.cells.size(), 0);
+    if (paintedCells.size() != canvas.cells.size()) {
+    paintedCells.assign(canvas.cells.size(), 0);
     currentStroke = 0;
 }
 
-    rebuildStampRows(cursorPtr);
-    if ((int)spanLow.size() != canvasPtr.h) {
-        spanLow.assign(canvasPtr.h, INT_MAX);
-        spanHigh.assign(canvasPtr.h, INT_MIN);
+    rebuildStampRows(brush);
+    if ((int)spanLow.size() != canvas.h) {
+        spanLow.assign(canvas.h, INT_MAX);
+        spanHigh.assign(canvas.h, INT_MIN);
     }
 
-    int minY = canvasPtr.h;
+    int minY = canvas.h;
     int maxY = -1;
 
     auto flushRow = [&](int yl, int lx0, int lx1) {
         for (size_t i = 0; i < stampLow.size(); ++i) {
             if (stampLow[i] > stampHigh[i]) continue;
             int y = yl + stampMinDy + (int)i;
-            if ((unsigned)y >= (unsigned)canvasPtr.h) continue;
+            if ((unsigned)y >= (unsigned)canvas.h) continue;
             spanLow[y] = std::min(spanLow[y], lx0 + stampLow[i]);
             spanHigh[y] = std::max(spanHigh[y], lx1 + stampHigh[i]);
             minY = std::min(minY, y);
@@ -161,15 +161,16 @@ void paintAt(GLFWwindow* window, bool first) {
 
     if (maxY < 0) return;
 
+    Color color = (brush.isBrush) ? brush.color : Color{ 255,255,255,255 };
     glBindBuffer(GL_ARRAY_BUFFER, gbs::colorVBO);
     for (int y = minY; y <= maxY; ++y) {
         int lo = std::max(spanLow[y], 0);
-        int hi = std::min(spanHigh[y], canvasPtr.w - 1);
+        int hi = std::min(spanHigh[y], canvas.w - 1);
         spanLow[y] = INT_MAX;
         spanHigh[y] = INT_MIN;
         if (lo > hi) continue;
 
-        size_t idx = (size_t)y * canvasPtr.w + lo;
+        size_t idx = (size_t)y * canvas.w + lo;
         size_t n = (size_t)(hi - lo + 1);
         for (size_t i = 0; i < n; ++i) {
             size_t cellIdx = idx + i;
@@ -179,13 +180,13 @@ void paintAt(GLFWwindow* window, bool first) {
 
             paintedCells[cellIdx] = currentStroke;
 
-            canvasPtr.cells[cellIdx] = blendColors(
-                cursorPtr.color,
-                canvasPtr.cells[cellIdx]
+            canvas.cells[cellIdx] = blendColors(
+                brush.color,
+                canvas.cells[cellIdx]
             );
         }
         glBufferSubData(GL_ARRAY_BUFFER, idx * sizeof(Color),
-            n * sizeof(Color), &canvasPtr.cells[idx]);
+            n * sizeof(Color), &canvas.cells[idx]);
     }
 }
 

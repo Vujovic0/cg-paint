@@ -1,10 +1,10 @@
-#include "Cursor.h"
+#include "Brush.h"
 #include <cmath>
 #include "constants.h"
 
 constexpr int CIRCLE_RADIUS_SPIKE_TOLERANCE = 5;
 
-std::vector<Vertex> Cursor::generateVertices(float cellSize, double mx, double my) {
+std::vector<Vertex> Brush::generateVertices(float cellSize, double mx, double my) {
     switch (shape) {
     case CursorShape::CIRCLE:   return createCircle(cellSize, mx, my);
     case CursorShape::TRIANGLE: return createTriangle(cellSize, mx, my);
@@ -13,7 +13,7 @@ std::vector<Vertex> Cursor::generateVertices(float cellSize, double mx, double m
     return {};
 }
 
-std::vector<Vertex> Cursor::createCircle(float cellSize, double mx, double my) {
+std::vector<Vertex> Brush::createCircle(float cellSize, double mx, double my) {
     const float r = cellSize * radius;
     const float PI = 3.14159265f;
     const float cx = (float)mx, cy = (float)my;
@@ -30,7 +30,7 @@ std::vector<Vertex> Cursor::createCircle(float cellSize, double mx, double my) {
     return v;
 }
 
-std::vector<Vertex> Cursor::createTriangle(float cellSize, double mx, double my) {
+std::vector<Vertex> Brush::createTriangle(float cellSize, double mx, double my) {
     const float h = cellSize * radius;
     const float cx = (float)mx, cy = (float)my;
     return {
@@ -40,7 +40,7 @@ std::vector<Vertex> Cursor::createTriangle(float cellSize, double mx, double my)
     };
 }
 
-std::vector<Vertex> Cursor::createSquare(float cellSize, double mx, double my) {
+std::vector<Vertex> Brush::createSquare(float cellSize, double mx, double my) {
     const float h = cellSize * radius;
     const float cx = (float)mx, cy = (float)my;
 
@@ -52,7 +52,7 @@ std::vector<Vertex> Cursor::createSquare(float cellSize, double mx, double my) {
     return { tl, tr, br, bl};
 }
 
-void Cursor::rebuildStamp() {
+void Brush::rebuildStamp() {
     stamp.clear();
     int radius = (int)ceilf(this->radius);
     for (int dy = -radius; dy <= radius; dy++) {

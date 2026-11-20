@@ -139,20 +139,29 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Button.cpp" />
     <ClCompile Include="callbacks.cpp" />
     <ClCompile Include="Canvas.cpp" />
     <ClCompile Include="CanvasView.cpp" />
     <ClCompile Include="CanvasView.h" />
     <ClCompile Include="Colors.h" />
-    <ClCompile Include="Cursor.cpp" />
-    <ClCompile Include="drawCursor.cpp" />
+    <ClCompile Include="ComponentManager.cpp" />
+    <ClCompile Include="ComponentManager.h" />
+    <ClCompile Include="Brush.cpp" />
+    <ClCompile Include="drawBrush.cpp" />
+    <ClCompile Include="Geometry.cpp" />
     <ClCompile Include="globals.cpp" />
+    <ClCompile Include="InputField.cpp" />
+    <ClCompile Include="InputField.h" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Minimap.cpp" />
     <ClCompile Include="Minimap.h" />
     <ClCompile Include="paintAt.cpp" />
+    <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="resize.cpp" />
     <ClCompile Include="shaderUtil.cpp" />
+    <ClCompile Include="Toolbar.cpp" />
+    <ClCompile Include="Toolbar.h" />
     <ClCompile Include="vboHandling.cpp" />
     <ClCompile Include="Vertex.cpp" />
   </ItemGroup>
@@ -161,17 +170,24 @@
     <None Include="canvas.vert" />
     <None Include="basic.frag" />
     <None Include="basic.vert" />
+    <None Include="text.frag" />
+    <None Include="text.vert" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Button.h" />
     <ClInclude Include="callbacks.h" />
     <ClInclude Include="Canvas.h" />
+    <ClInclude Include="Component.h" />
     <ClInclude Include="constants.h" />
-    <ClInclude Include="Cursor.h" />
+    <ClInclude Include="Brush.h" />
     <ClInclude Include="cursorShape.h" />
-    <ClInclude Include="drawCursor.h" />
+    <ClInclude Include="drawBrush.h" />
     <ClInclude Include="edge.h" />
+    <ClInclude Include="focus.h" />
+    <ClInclude Include="Geometry.h" />
     <ClInclude Include="globals.h" />
     <ClInclude Include="paintAt.h" />
+    <ClInclude Include="Renderer.h" />
     <ClInclude Include="resize.h" />
     <ClInclude Include="shaderUtil.h" />
     <ClInclude Include="structs.h" />

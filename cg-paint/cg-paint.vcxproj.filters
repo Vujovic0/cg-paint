@@ -37,6 +37,18 @@
     <Filter Include="Header Files\enums">
       <UniqueIdentifier>{c1183f07-fe3c-4075-88cf-d0a7cc6ea188}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\view">
+      <UniqueIdentifier>{17979f8a-18ae-4826-8bb8-9cbafe1b3301}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\view">
+      <UniqueIdentifier>{e511e8ad-aa5f-4d5a-a7de-a8237b78a43e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\viewComponents">
+      <UniqueIdentifier>{3cdcc2b5-a29b-4d25-90b5-f72c35a46085}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\viewComponents">
+      <UniqueIdentifier>{a5fe923a-2f64-44a5-aeb4-6dc723f6ecca}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -69,13 +81,13 @@
     <ClCompile Include="Vertex.cpp">
       <Filter>Source Files\classes</Filter>
     </ClCompile>
-    <ClCompile Include="Cursor.cpp">
+    <ClCompile Include="Brush.cpp">
       <Filter>Source Files\classes</Filter>
     </ClCompile>
     <ClCompile Include="Colors.h">
       <Filter>Header Files\classes</Filter>
     </ClCompile>
-    <ClCompile Include="drawCursor.cpp">
+    <ClCompile Include="drawBrush.cpp">
       <Filter>Source Files\functions</Filter>
     </ClCompile>
     <ClCompile Include="paintAt.cpp">
@@ -85,6 +97,33 @@
       <Filter>Header Files\classes</Filter>
     </ClCompile>
     <ClCompile Include="Minimap.cpp">
+      <Filter>Source Files\classes</Filter>
+    </ClCompile>
+    <ClCompile Include="Toolbar.h">
+      <Filter>Header Files\view</Filter>
+    </ClCompile>
+    <ClCompile Include="InputField.h">
+      <Filter>Header Files\viewComponents</Filter>
+    </ClCompile>
+    <ClCompile Include="InputField.cpp">
+      <Filter>Source Files\viewComponents</Filter>
+    </ClCompile>
+    <ClCompile Include="Geometry.cpp">
+      <Filter>Source Files\viewComponents</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentManager.h">
+      <Filter>Header Files\viewComponents</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentManager.cpp">
+      <Filter>Source Files\viewComponents</Filter>
+    </ClCompile>
+    <ClCompile Include="Toolbar.cpp">
+      <Filter>Source Files\view</Filter>
+    </ClCompile>
+    <ClCompile Include="Button.cpp">
+      <Filter>Source Files\viewComponents</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer.cpp">
       <Filter>Source Files\classes</Filter>
     </ClCompile>
   </ItemGroup>
@@ -99,6 +138,12 @@
       <Filter>Resource Files\shaders</Filter>
     </None>
     <None Include="basic.frag">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="text.vert">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="text.frag">
       <Filter>Resource Files\shaders</Filter>
     </None>
   </ItemGroup>
@@ -133,17 +178,32 @@
     <ClInclude Include="cursorShape.h">
       <Filter>Header Files\enums</Filter>
     </ClInclude>
-    <ClInclude Include="Cursor.h">
+    <ClInclude Include="Brush.h">
       <Filter>Header Files\classes</Filter>
     </ClInclude>
     <ClInclude Include="constants.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="drawCursor.h">
+    <ClInclude Include="drawBrush.h">
       <Filter>Header Files\functions</Filter>
     </ClInclude>
     <ClInclude Include="paintAt.h">
       <Filter>Header Files\functions</Filter>
+    </ClInclude>
+    <ClInclude Include="focus.h">
+      <Filter>Header Files\functions</Filter>
+    </ClInclude>
+    <ClInclude Include="Component.h">
+      <Filter>Header Files\viewComponents</Filter>
+    </ClInclude>
+    <ClInclude Include="Geometry.h">
+      <Filter>Header Files\viewComponents</Filter>
+    </ClInclude>
+    <ClInclude Include="Button.h">
+      <Filter>Header Files\viewComponents</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer.h">
+      <Filter>Header Files\classes</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

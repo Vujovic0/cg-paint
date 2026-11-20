@@ -8,3 +8,4 @@ void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 void cursorPosCallback(GLFWwindow* window, double x, double y);
 int detectEdges(float mx, float my);
 void updateCursor(GLFWwindow* window, int edges);
+void charCallback(GLFWwindow*, unsigned int codepoint);

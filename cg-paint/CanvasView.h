@@ -16,4 +16,5 @@ public:
     Vec2 cellToScreen(int cx, int cy) const { return Vec2{ cx * cellSize + originX, cy * cellSize + originY }; };
     void zoomAt(float mx, float my, float factor);
     void pan(float dx, float dy) { originX += dx; originY += dy; };
+    bool isCursorOn(int mx, int my);
 };

@@ -1,5 +1,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <ft2build.h>
+#include FT_FREETYPE_H
 
 #include <iostream>
 #include <chrono>
@@ -11,10 +13,12 @@
 #include "resize.h"
 #include "edge.h"
 #include "callbacks.h"
-#include "drawCursor.h"
 #include <algorithm>
 #include "constants.h"
 #include "Minimap.h"
+#include "Renderer.h"
+#include "Toolbar.h"
+#include "drawBrush.h"
 
 
 float uAspectRatio = 1.0f;
@@ -59,20 +63,34 @@ int main()
     glfwMakeContextCurrent(window);
     glfwFocusWindow(window);
 
+
+
     glfwSetScrollCallback(window, scrollCallback);
     glfwSetCursorPosCallback(window, cursorPosCallback);
     glfwSetKeyCallback(window, keyboardCallback);
     glfwSetMouseButtonCallback(window, mouseCallback);
+    glfwSetCharCallback(window, charCallback);
 
     if (glewInit() != GLEW_OK) return endProgram("GLEW failed to initialize");
 
     unsigned int canvasShader = createShader("canvas.vert", "canvas.frag");
     unsigned int basicShader = createShader("basic.vert", "basic.frag");
+    unsigned int textShader = createShader("text.vert", "text.frag");
+
+    Renderer renderer("C:/Windows/Fonts/arial.ttf", 18, basicShader, textShader);
+
 
     gbs::canvas.at(0, 0) = Color{ 1, 0, 0, 1 };
     gbs::viewPtr = &gbs::canvasView;
     gbs::canvasPtr = &gbs::canvas;
     gbs::cursorPtr = &gbs::cursor;
+
+    Toolbar toolbar(gbs::windowWidth, 40, 0, 0, [](Color c)
+        {
+            gbs::cursorPtr->color = c;
+        });
+
+    gbs::toolbarPtr = &toolbar;
 
     float maxDim = (float)std::max(gbs::canvas.w, gbs::canvas.h);
     gbs::cursor.radius = std::clamp(maxDim / 200.0f, 0.5f, constants::MAX_CURSOR_SIZE);
@@ -105,8 +123,9 @@ int main()
 
         glBindVertexArray(gbs::canvasVAO);
         glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, gbs::canvas.w * gbs::canvas.h);
+        toolbar.draw(renderer);
         minimap.draw(canvasShader);
-        drawCursor(window, basicShader, *gbs::cursorPtr);
+        drawBrush(window, basicShader, *gbs::cursorPtr);
         if (gbs::resizing) drawResizePreview(basicShader);
         glfwSwapBuffers(window); 
         glfwPollEvents();
