@@ -81,8 +81,6 @@ int main()
 
     Renderer renderer("C:/Windows/Fonts/arial.ttf", 18, basicShader, textShader);
 
-
-    gbs::canvas.at(0, 0) = Color{ 1, 0, 0, 1 };
     gbs::viewPtr = &gbs::canvasView;
     gbs::canvasPtr = &gbs::canvas;
     gbs::cursorPtr = &gbs::cursor;
